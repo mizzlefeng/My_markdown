@@ -1,10 +1,8 @@
-# 开始写网页
-## 宝塔面板
-### 订单
-#### 的
-
+# 安装宝塔面板
+https://www.bt.cn/new/index.html
+注册宝塔账号
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTc1MzI0ODc1M119
+eyJoaXN0b3J5IjpbLTEwNTc1NjQ3OTNdfQ==
 -->
