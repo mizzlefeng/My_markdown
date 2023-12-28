@@ -1,5 +1,5 @@
 # 安装宝塔面板
-https://www.bt.cn/new/index.html
+bt.cn
 注册宝塔账号
 
 根据**安装宝塔**的选项的指示安装宝塔面板
@@ -9,6 +9,5 @@ yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_
 ```
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwMjU4MTU4NzIsLTEwNTc1NjQ3OTNdfQ
-==
+eyJoaXN0b3J5IjpbLTQ5NjEyNTkyOSwtMTA1NzU2NDc5M119
 -->
