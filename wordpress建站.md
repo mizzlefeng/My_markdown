@@ -14,10 +14,12 @@ yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_
 >
 >==打开面板前请看== 【云服务器】请在安全组放行 38505 端口 因默认启用自签证书https加密访问，浏览器将提示不安全 点击【高级】-【继续访问】或【接受风险并继续】访问 教程：https://www.bt.cn/bbs/thread-117246-1-1.html 
 
-遇见b
+遇见报错打不开网页——解决方案：
+**首先看阿里云服务器是否放开了80端口！**
+
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTAyMzU3ODk1NiwxNDkzMTcxMjAsMTY2Nj
+eyJoaXN0b3J5IjpbMTMzOTcwMDI5MCwxNDkzMTcxMjAsMTY2Nj
 YwNTM3MywxNDkzMTcxMjAsLTQ5NjEyNTkyOSwtMTA1NzU2NDc5
 M119
 -->
