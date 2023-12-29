@@ -10,11 +10,11 @@ yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_
 宝塔面板安装后返回的信息：
 
 > ==面板账户登录信息== 
-> 外网面板地址: http://47.113.195.79:38505/659fb2bc 内网面板地址: http://172.19.33.114:38505/659fb2bc
+> 外网面板地址: http://47.113.195.79:38505/659fb2bc 内网面板地址: http://172.19.33.114:38505/659fb2bc username: 8kreoqr7 password: 2a792446 
 >
 >==打开面板前请看== 【云服务器】请在安全组放行 38505 端口 因默认启用自签证书https加密访问，浏览器将提示不安全 点击【高级】-【继续访问】或【接受风险并继续】访问 教程：https://www.bt.cn/bbs/thread-117246-1-1.html 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY2NjYwNTM3MywxNDkzMTcxMjAsLTQ5Nj
-EyNTkyOSwtMTA1NzU2NDc5M119
+eyJoaXN0b3J5IjpbMTQ5MzE3MTIwLDE2NjY2MDUzNzMsMTQ5Mz
+E3MTIwLC00OTYxMjU5MjksLTEwNTc1NjQ3OTNdfQ==
 -->
