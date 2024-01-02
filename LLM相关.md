@@ -6,7 +6,8 @@ python server.py --listen --api
 
 # 内网穿透
 ngrok http 11.11.11.101:7860
+
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTY0OTA2NjQyMF19
+eyJoaXN0b3J5IjpbMTA2Mjg4MjY1NCwtNjQ5MDY2NDIwXX0=
 -->
