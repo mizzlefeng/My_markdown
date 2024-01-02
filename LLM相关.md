@@ -9,7 +9,15 @@ ngrok http 11.11.11.101:7860
 ```
 
 # model参数的下载HF镜像
+```
+git clone https://github.com/LetheSec/HuggingFace-Download-Accelerator.git
+cd HuggingFace-Download-Accelerator
 
+python hf_download.py --model lmsys/vicuna-7b-v1.5 --save_dir ./hf_hub
+```
+```
+```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTkyNDMxMzUxLC02NDkwNjY0MjBdfQ==
+eyJoaXN0b3J5IjpbMTY5MjQ1OTIyOCwtOTI0MzEzNTEsLTY0OT
+A2NjQyMF19
 -->
