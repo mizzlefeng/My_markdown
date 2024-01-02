@@ -6,8 +6,10 @@ python server.py --listen --api
 
 # 内网穿透
 ngrok http 11.11.11.101:7860
-
 ```
+
+# model参数的下载HF镜像
+
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTA2Mjg4MjY1NCwtNjQ5MDY2NDIwXX0=
+eyJoaXN0b3J5IjpbLTkyNDMxMzUxLC02NDkwNjY0MjBdfQ==
 -->
