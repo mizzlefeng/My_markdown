@@ -16,10 +16,12 @@ yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_
 
 遇见报错打不开网页——解决方案：
 **首先看阿里云服务器是否放开了80端口！**
-# 网
+# wordpress网站后台
+[仪表盘 ‹ mizzlefeng的网站 — WordPress](http://mizzlefeng.xyz/wp-admin/)
+
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTk1NzMyNzAxNCwxMzM5NzAwMjkwLDE0OT
+eyJoaXN0b3J5IjpbLTk2MjM4MTQ0NSwxMzM5NzAwMjkwLDE0OT
 MxNzEyMCwxNjY2NjA1MzczLDE0OTMxNzEyMCwtNDk2MTI1OTI5
 LC0xMDU3NTY0NzkzXX0=
 -->
