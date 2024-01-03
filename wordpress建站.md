@@ -16,10 +16,10 @@ yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_
 
 遇见报错打不开网页——解决方案：
 **首先看阿里云服务器是否放开了80端口！**
-
+# 网
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTMzOTcwMDI5MCwxNDkzMTcxMjAsMTY2Nj
-YwNTM3MywxNDkzMTcxMjAsLTQ5NjEyNTkyOSwtMTA1NzU2NDc5
-M119
+eyJoaXN0b3J5IjpbLTk1NzMyNzAxNCwxMzM5NzAwMjkwLDE0OT
+MxNzEyMCwxNjY2NjA1MzczLDE0OTMxNzEyMCwtNDk2MTI1OTI5
+LC0xMDU3NTY0NzkzXX0=
 -->
