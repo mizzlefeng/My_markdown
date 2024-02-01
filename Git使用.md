@@ -33,7 +33,7 @@ git init MedFollowUp
 git status # 查看库的状态
 ```
 
-![img](C:\Users\DELL\Desktop\assets\watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L3plcm9vb29yZXo=,size_16,color_FFFFFF,t_70.png)
+![输入图片说明](/imgs/2024-02-01/ZEiOl9wRt4brKgpQ.png)
 
 ## git add & commit
 
@@ -83,8 +83,7 @@ git config --global user.name "起个名字"
 git config --global user.email "你的邮箱"
 ssh-keygen -t rsa -C "你的邮箱"  三个连续回车，设置密码为空
 ```
-
-![image-20240201153807811](C:\Users\DELL\Desktop\assets\image-20240201153807811.png)
+![输入图片说明](/imgs/2024-02-01/Rq7mjnLSdiq7CJaY.png)
 
 - [x] 在C盘.ssh路径下有id_rsa和id_rsa.pub，使用记事本打开id_rsa.pub复制里面的秘钥
 - [x] 打开Github，在Settings中有SSH and GPG keys，选择SSH keys新增。
@@ -95,5 +94,5 @@ ssh-keygen -t rsa -C "你的邮箱"  三个连续回车，设置密码为空
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTg0ODYzOTc4OF19
+eyJoaXN0b3J5IjpbLTIwNTg4ODg1M119
 -->
