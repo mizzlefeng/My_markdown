@@ -1,5 +1,7 @@
 # Git安装
 
+教程：[Git教程 - 廖雪峰的官方网站 (liaoxuefeng.com)](https://www.liaoxuefeng.com/wiki/896043488029600)
+
 下载git，git的官网是：https://git-scm.com/
 
 ```cmd
@@ -94,5 +96,5 @@ ssh-keygen -t rsa -C "你的邮箱"  三个连续回车，设置密码为空
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIwNTg4ODg1M119
+eyJoaXN0b3J5IjpbOTE3Mzc3NDY4LC0yMDU4ODg4NTNdfQ==
 -->
