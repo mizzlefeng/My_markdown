@@ -14,11 +14,12 @@ git clone https://github.com/LetheSec/HuggingFace-Download-Accelerator.git
 cd HuggingFace-Download-Accelerator
 
 python hf_download.py --model lmsys/vicuna-7b-v1.5 --save_dir ./hf_hub
+python hf_download.py -M baichuan-inc/Baichuan2-7B-Chat -S ./model
 python .\hf_download.py -D pleisto/wikipedia-cn-20230720-filtered -S ../general_dataset/pretrain # 25w
 ```
 ```
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMjEwOTg3ODQxOSwxNjkyNDU5MjI4LC05Mj
-QzMTM1MSwtNjQ5MDY2NDIwXX0=
+eyJoaXN0b3J5IjpbLTk3MjYzNDg0MiwyMTA5ODc4NDE5LDE2OT
+I0NTkyMjgsLTkyNDMxMzUxLC02NDkwNjY0MjBdfQ==
 -->
