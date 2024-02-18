@@ -13,7 +13,7 @@ ngrok http 11.11.11.101:7860
 git clone https://github.com/LetheSec/HuggingFace-Download-Accelerator.git
 cd HuggingFace-Download-Accelerator
 
-pip -U 
+pip install -U huggingface_hub
 python hf_download.py --model lmsys/vicuna-7b-v1.5 --save_dir ./hf_hub
 python hf_download.py -M baichuan-inc/Baichuan2-7B-Chat -S ./model
 python .\hf_download.py -D pleisto/wikipedia-cn-20230720-filtered -S ../general_dataset/pretrain # 25w
@@ -21,7 +21,7 @@ python .\hf_download.py -D pleisto/wikipedia-cn-20230720-filtered -S ../general_
 ```
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTQ3MTAzNDA1MSwtOTcyNjM0ODQyLDIxMD
+eyJoaXN0b3J5IjpbLTQzNjk3ODMxNCwtOTcyNjM0ODQyLDIxMD
 k4Nzg0MTksMTY5MjQ1OTIyOCwtOTI0MzEzNTEsLTY0OTA2NjQy
 MF19
 -->
