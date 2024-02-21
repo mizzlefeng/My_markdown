@@ -93,8 +93,10 @@ ssh-keygen -t rsa -C "你的邮箱"  三个连续回车，设置密码为空
 
 ![输入图片说明](/imgs/2024-02-01/quy6z7tqF3TyEPFq.png)
 然后使用pycharm里的Git进行推送就可以了
+··
 
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbOTE3Mzc3NDY4LC0yMDU4ODg4NTNdfQ==
+eyJoaXN0b3J5IjpbLTE5MjA4NzUyNTQsOTE3Mzc3NDY4LC0yMD
+U4ODg4NTNdfQ==
 -->
