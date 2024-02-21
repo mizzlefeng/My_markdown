@@ -112,8 +112,21 @@ error: src refspec main does not match any
 git branch -m master main
 ```
 可以看到**master**已经被成功改为**main**了
+! [rejected] main -> main (non-fast-forward)
+这个问题解释起来很简单，还记得我们创建仓库时添加到README和license吗？在github仓库的main分支中有这两个文件，而在我们本地的仓库并没有这两个文件，如果我们执行这次commit，那么可能导致这两个文件丢失。
 
+接下来你有以下几个解决方案：下列代码中的example为远程仓库名称
+
+无视警告，README和license我不要了。
+```
+git push --force
+```
+试着合并初始提交与你的提交,这也是我**最推荐的方法**：
+```
+git fetch example
+git merge --allow-unrelated-histories example/main
+```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTU5MDc3NTc3MCwtMjI0MTk3OTc3LDE2OD
+eyJoaXN0b3J5IjpbMTY4ODkzNTIyMSwtMjI0MTk3OTc3LDE2OD
 I1NTU3OTIsOTE3Mzc3NDY4LC0yMDU4ODg4NTNdfQ==
 -->
