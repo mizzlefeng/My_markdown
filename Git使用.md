@@ -99,8 +99,21 @@ git remote -v ：列出当前仓库中已配置的远程仓库，并显示它们
 git remote add <remote_name> <remote_url> ：添加一个新的远程仓库。
 git remote remove lufei #删除lufei这个远程地址
 ```
-# 常见
+# 常见问题
+```
+error: src refspec main does not match any
+```
+**mian** 和 **master**
+
+你可能已经注意到了，在我们每次使用git指令时，git都在一直用蓝色的字提示我们当前处在一个叫**master**的分支
+这是git为我们创建的默认分支，而在上述过程中我们完全无视了这一点，我们只关心github上的那个**main**分支
+所以原因就是github的仓库中没有**master**这个分支，我们本地的仓库没有**main**分支，那好办，我们将本地仓库的**master**分支改名为**main**分支，它们不就统一了？
+```
+git branch -m master main
+```
+可以看到**master**已经被成功改为**main**了
+
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTI0MDUyMTc5MywtMjI0MTk3OTc3LDE2OD
+eyJoaXN0b3J5IjpbMTU5MDc3NTc3MCwtMjI0MTk3OTc3LDE2OD
 I1NTU3OTIsOTE3Mzc3NDY4LC0yMDU4ODg4NTNdfQ==
 -->
