@@ -100,6 +100,7 @@ git remote add <remote_name> <remote_url> ：添加一个新的远程仓库。
 git remote remove lufei #删除lufei这个远程地址
 ```
 # 常见问题
+## 1
 ```
 error: src refspec main does not match any
 ```
@@ -127,9 +128,85 @@ git fetch example
 git merge --allow-unrelated-histories example/main
 ```
 
+## 2
+```
+Failed to connect to github.com port 443 after 21052 ms: Couldn't connect to server
+```
+使用 git clone 下载 Github 等网站的仓库时，可能会遇到类似 "Recv failure: Connection was reset" 或 "Failed to connect to http://github.com port 443 after 21114 ms: Couldn't connect to server" 的报错。即使打开了全局代理，也会报错。此时，需要为 Git 单独配置代理，可以使用以下命令：
 
+```bash
+git config --global http.proxy http://127.0.0.1:7890
+git config --global https.proxy http://127.0.0.1:7890
+```
+配置完成后，可以使用以下命令查看并修改 Git 的配置：
+
+```bash
+git config --global --edit
+```
+如果仍然报错，可以检查代理端口是否配置正确，并尝试用以下命令设置关闭 SSL 证书验证：
+
+```text
+git config --global http.sslVerify false
+```
+
+# 常用命令
+
+```
+#显示当前的Git配置  
+git config --list
+```
+
+```
+#列出所有本地分支  
+git branch
+# 列出所有本地分支和远程分支  
+git branch -a
+# 新建一个分支，但依然停留在当前分支  
+git branch [branch-name] # 新建一个分支
+git checkout -b [branch] # 新建一个分支，指向切换到该分支  
+git checkout [branch-name] # 切换到上一个分支  
+git branch --set-upstream [branch] [remote-branch] # 合并指定分支到当前分支  
+git merge [branch] # 选择一个commit，合并进当前分支
+```
+```
+#显示指定文件是什么人在什么时间修改过  
+git diff
+git diff [first-branch]...[second-branch] # 显示今天你写了多少行代码
+```
+
+远程同步
+```
+git fetch [remote] # 显示所有远程仓库
+git remote -v
+git remote add [shortname] [url] # 取回远程仓库的变化，并与本地分支合并
+```
+版本回退
+```
+git log #显示从最近到最远的显示日志
+git log –pretty=oneline #精简日志
+git reset --hard HEAD^ # 回退上个版本
+git reset --hard HEAD^^ # 回退上上个版本
+git reset --hard HEAD~100 # 回退到前100个版本
+git reflog # 回退之后查看回退之前的版本号 eg：git reset --hard 6fcfc89
+git checkout --readme.txt # 把readme.txt文件在工作区做的修改全部撤销
+```
+```
+总结创建与合并分支命令如下：
+
+查看分支：git branch
+
+创建分支：git branch name
+
+切换分支：git checkout name
+
+创建+切换分支：git checkout –b name
+
+合并某分支到当前分支：git merge name
+
+删除分支：git branch –d name
+```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMzMwNDE2NTI5LDE2ODg5MzUyMjEsLTIyND
-E5Nzk3NywxNjgyNTU1NzkyLDkxNzM3NzQ2OCwtMjA1ODg4ODUz
-XX0=
+eyJoaXN0b3J5IjpbODcxNjczNzU2LDMzMDQxNjUyOSwxNjg4OT
+M1MjIxLC0yMjQxOTc5NzcsMTY4MjU1NTc5Miw5MTczNzc0Njgs
+LTIwNTg4ODg1M119
 -->
