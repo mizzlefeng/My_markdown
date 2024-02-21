@@ -95,9 +95,12 @@ ssh-keygen -t rsa -C "你的邮箱"  三个连续回车，设置密码为空
 然后使用pycharm里的Git进行推送就可以了
 ```
 git push -u origin master
+git remote -v ：列出当前仓库中已配置的远程仓库，并显示它们的 URL
+git remote add <remote_name> <remote_url> ：添加一个新的远程仓库。
+git remote remove lufei #删除lufei这个远程地址
 ```
 
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY4MjU1NTc5Miw5MTczNzc0NjgsLTIwNT
-g4ODg1M119
+eyJoaXN0b3J5IjpbLTIyNDE5Nzk3NywxNjgyNTU1NzkyLDkxNz
+M3NzQ2OCwtMjA1ODg4ODUzXX0=
 -->
