@@ -126,7 +126,10 @@ git push --force
 git fetch example
 git merge --allow-unrelated-histories example/main
 ```
+
+
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbMTY4ODkzNTIyMSwtMjI0MTk3OTc3LDE2OD
-I1NTU3OTIsOTE3Mzc3NDY4LC0yMDU4ODg4NTNdfQ==
+eyJoaXN0b3J5IjpbMzMwNDE2NTI5LDE2ODg5MzUyMjEsLTIyND
+E5Nzk3NywxNjgyNTU1NzkyLDkxNzM3NzQ2OCwtMjA1ODg4ODUz
+XX0=
 -->
