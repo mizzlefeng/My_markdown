@@ -99,8 +99,8 @@ git remote -v ：列出当前仓库中已配置的远程仓库，并显示它们
 git remote add <remote_name> <remote_url> ：添加一个新的远程仓库。
 git remote remove lufei #删除lufei这个远程地址
 ```
-
+# 常见
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTIyNDE5Nzk3NywxNjgyNTU1NzkyLDkxNz
-M3NzQ2OCwtMjA1ODg4ODUzXX0=
+eyJoaXN0b3J5IjpbMTI0MDUyMTc5MywtMjI0MTk3OTc3LDE2OD
+I1NTU3OTIsOTE3Mzc3NDY4LC0yMDU4ODg4NTNdfQ==
 -->
