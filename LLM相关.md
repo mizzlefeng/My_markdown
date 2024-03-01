@@ -37,8 +37,16 @@ git clone https://www.modelscope.cn/baichuan-inc/Baichuan2-7B-Chat.git
 git lfs install
 git clone https://swanhub.co/ZhipuAI/chatglm3-6b.git
 ```
+
+# 详细显示显卡信息（fresh）
+```bash
+nvitop
+# 这个只需要pip install nvitop即可
+
+watch -n 2 -d nvidia-smi # 每两秒刷新一次
+```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTg1NTcxNTE3NywtNDM2OTc4MzE0LC05Nz
-I2MzQ4NDIsMjEwOTg3ODQxOSwxNjkyNDU5MjI4LC05MjQzMTM1
-MSwtNjQ5MDY2NDIwXX0=
+eyJoaXN0b3J5IjpbLTE0Mzk3OTAxMDUsLTg1NTcxNTE3NywtND
+M2OTc4MzE0LC05NzI2MzQ4NDIsMjEwOTg3ODQxOSwxNjkyNDU5
+MjI4LC05MjQzMTM1MSwtNjQ5MDY2NDIwXX0=
 -->
