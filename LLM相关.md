@@ -23,6 +23,7 @@ python .\hf_download.py -D pleisto/wikipedia-cn-20230720-filtered -S ../general_
 # 大模型参数的下载-魔塔
 
 ```
+pip install modelscope
 from modelscope import snapshot_download 
 model_dir = snapshot_download('baichuan-inc/Baichuan2-7B-Chat')
 ```
@@ -46,7 +47,8 @@ nvitop
 watch -n 2 -d nvidia-smi # 每两秒刷新一次
 ```
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE0Mzk3OTAxMDUsLTg1NTcxNTE3NywtND
-M2OTc4MzE0LC05NzI2MzQ4NDIsMjEwOTg3ODQxOSwxNjkyNDU5
-MjI4LC05MjQzMTM1MSwtNjQ5MDY2NDIwXX0=
+eyJoaXN0b3J5IjpbLTU1NjkwNDMwMiwtMTQzOTc5MDEwNSwtOD
+U1NzE1MTc3LC00MzY5NzgzMTQsLTk3MjYzNDg0MiwyMTA5ODc4
+NDE5LDE2OTI0NTkyMjgsLTkyNDMxMzUxLC02NDkwNjY0MjBdfQ
+==
 -->
