@@ -52,7 +52,7 @@ token是大模型处理和生成语言文本的基本单位，Bert和GPT-2中，
 
 ## 常用分词算法简述
 
-![tokenizer](.\assets\tokenizer-1711693312304-9.png)
+![tokenizer](./assets/tokenizer-1711693312304-9.png)
 
 分词编码指的是将自然语言切割为最小的语义单元token，并且将token转化为数值id供给计算机进行模型学习的过程。常用的分词算法根据切分文本的颗粒度大小分为word，char，subword三类。
 
@@ -149,7 +149,7 @@ b'\xe9\xbe\x98'
 BBPE是基于BPE在字节颗粒度上的拓展，两者在分词算法上没有本质区别，本节先介绍BPE分词算法。
  BPE的核心思想是事先给定一个最大分词数量，针对语料文本中的每个字符token，逐步合并出现频率最高的连续的两个字符组合，形成一个新词token，直到达到目标分词数量。BPE的计算流程图如下
 
-![LLM bpe](D:\python_work\My_markdown\assets\LLM bpe-1711693316583-11.png)
+![LLM bpe](./assets/LLM bpe-1711693316583-11.png)
 
 
 
