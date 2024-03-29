@@ -245,3 +245,4 @@ SentencePieceTrainer的训练模式支持BPE，unigram等多种模式，当model
 结论和前文一致，BPE方式对于未登陆词输出<unk>的token id为0，而BBPE如果映射不到该词会转化为3个字节表示，输出三个token id.
 ```
 
+tst
