@@ -23,6 +23,7 @@ python .\hf_download.py -D pleisto/wikipedia-cn-20230720-filtered -S ../general_
 # 大模型参数的下载-魔塔
 
 ```
+pip install modelscope
 from modelscope import snapshot_download 
 model_dir = snapshot_download('baichuan-inc/Baichuan2-7B-Chat')
 ```
@@ -45,12 +46,6 @@ nvitop
 
 watch -n 2 -d nvidia-smi # 每两秒刷新一次
 ```
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbLTE0Mzk3OTAxMDUsLTg1NTcxNTE3NywtND
-M2OTc4MzE0LC05NzI2MzQ4NDIsMjEwOTg3ODQxOSwxNjkyNDU5
-MjI4LC05MjQzMTM1MSwtNjQ5MDY2NDIwXX0=
--->
-
 # 分词编码理论
 
 token是大模型处理和生成语言文本的基本单位，Bert和GPT-2中，都是简单地将中文文本切分为单个汉字字符作为token，而目前LLaMA，ChatGLM等大模型采用的是基于分词工具sentencepiece实现的BBPE（Byte-level BPE）分词编码算法，这里是BBPE分词编码作为大模型系列的开篇。
