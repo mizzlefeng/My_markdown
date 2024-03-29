@@ -52,7 +52,7 @@ token是大模型处理和生成语言文本的基本单位，Bert和GPT-2中，
 
 ## 常用分词算法简述
 
-![tokenizer](D:\python_work\My_markdown\assets\tokenizer-1711693312304-9.png)
+![tokenizer](.\assets\tokenizer-1711693312304-9.png)
 
 分词编码指的是将自然语言切割为最小的语义单元token，并且将token转化为数值id供给计算机进行模型学习的过程。常用的分词算法根据切分文本的颗粒度大小分为word，char，subword三类。
 
