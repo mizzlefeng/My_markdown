@@ -149,7 +149,7 @@ b'\xe9\xbe\x98'
 BBPE是基于BPE在字节颗粒度上的拓展，两者在分词算法上没有本质区别，本节先介绍BPE分词算法。
  BPE的核心思想是事先给定一个最大分词数量，针对语料文本中的每个字符token，逐步合并出现频率最高的连续的两个字符组合，形成一个新词token，直到达到目标分词数量。BPE的计算流程图如下：
 
-![img](D:\python_work\My_markdown\assets\webp.webp)
+![webp](D:\python_work\My_markdown\assets\webp.webp)
 
 **step 1**：设定最大分词词典数量vocab size，初始化一个词典
 
@@ -245,4 +245,3 @@ SentencePieceTrainer的训练模式支持BPE，unigram等多种模式，当model
 结论和前文一致，BPE方式对于未登陆词输出<unk>的token id为0，而BBPE如果映射不到该词会转化为3个字节表示，输出三个token id.
 ```
 
-tst
