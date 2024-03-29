@@ -149,6 +149,15 @@ git config --global --edit
 git config --global http.sslVerify false
 ```
 
+### 如果没有挂着梯子但是还是遇到了以上报错
+
+```python
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
+
+
 ## 3 local changes  would be overwritten
 
 ```python
