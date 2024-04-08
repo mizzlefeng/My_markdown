@@ -180,17 +180,62 @@ NetMHCIIpan-3.2、PUFFIN、DeepSeqPanII、MHCAttnNet
 3. 使用全连接层和max-pooling层来提取肽和MHC-II分子的相互作用
 4. 输出层获得结合亲和力
 
-![image-20240322112418974](C:\Users\DELL\Desktop\assets\image-20240322112418974.png)
+![image-20240322112418974](D:\python_work\My_markdown\specific work\assets\image-20240322112418974.png)
 
 ### 输入层
 
-肽序列P：L*d
+肽序列P：X：L*d（d是氨基酸嵌入的维数）
 
-MHC-II的伪序列Q‘：34*d
+MHC-II的伪序列Q‘：Y：34*d
 
-## BICL
+### BICL
 
-binding interaction convolutional layer：结合相互作用卷积层。通过考虑X的所有可能的结合核心，获得肽X与MHC-II分子Y之间相互作用的表示。
+binding interaction convolutional layer：结合相互作用卷积层。通过考虑肽X的所有可能的结合核心，获得肽X与MHC-II分子Y之间相互作用的表示。传统的基于序列的CNN中，输入序列共享相同的核（过滤器）。但是在这个问题中，每个MHC-II类分子具有不同的结合偏好。
+
+BICL为每个MHC-II生成不同的核，M为结合核的大小（文中=9），使用一个权重矩阵$${W_k}$$（维度是M×34）去生成第k个核$$f\left( {{W_k}Y} \right)$$，其中$$f$$是激活函数。把从第i个残基开始的X的潜在结合核心记为$${X_{i:i + M - 1}}$$，所以，肽的潜在结合核心和MHC-II分子的相互作用为：
+
+$$C_{i,k}^{\left( 0 \right)} = f\left( {f\left( {{W_k}Y} \right){X_{i:i + M - 1}} + {b_k}} \right)$$
+
+### 最大池化和输出层
+
+使用N个全连接层和一个max-pooling层获取肽X和MHC-II类分子Y之间的相互作用的表示$$g \in {R^{b\left( N \right)}}$$：
+
+$$C_i^{\left( n \right)} = f\left( {C_{_i}^{\left( {n - 1} \right)}{W^{\left( n \right)}} + {b^n}} \right)$$
+
+$${g_j} = \max \left\{ {C_{i,j}^{\left( N \right)},C_{2,j}^{\left( N \right)},...,C_{L - M + 1,j}^{\left( N \right)}} \right\}$$
+
+使用输出层来预测结合亲和力：
+
+$$\hat z = \sigma \left( {{w^{\left( o \right)}}g + {b^{\left( o \right)}}} \right)$$
+
+### 结合核心预测
+
+去掉最大池化层，直接在后面加输出层就可以获得每9个潜在结合核心的预测分数：
+
+$${{\hat z}_i} = \sigma \left( {{w^{\left( o \right)}}C_i^{\left( N \right)} + {b^{\left( o \right)}}} \right)$$
+
+最高分数的地方就认为是结合核心。
+
+## 实验
+
+### 数据集
+
+基本来自IEDB数据库：免疫表位数据库。免疫表位数据库(IEDB)是由美国国立过敏与感染性疾病研究院(NIAID)资助的免费资源。 它记录了在传染病，过敏，自身免疫和移植背景下在人类，非人灵长类动物和其他动物物种中研究的抗体和T细胞表位的实验数据。
 
 
 
+四个公开可用的基准数据集(BD2016, ID2017, BD2020和BC2015)。BD2016和ID2017用于MHC-肽结合亲和力，BD2020用于MHC-肽结合分类，BC2015用于预测结合核心。
+
+BD2016：[NetMHCIIpan 3.2 - DTU Health Tech - Bioinformatic Services](https://services.healthtech.dtu.dk/services/NetMHCIIpan-3.2/)
+
+## 结果
+
+分析任务：结合亲和力（具体值）、分类（以IC50结合值和500nM比较，转换后的亲和为0.426判断肽是否为结合物还是非结合物）、结合核心预测。
+
+### 评估指标
+
+AUC、PCC
+
+![image-20240408105938739](D:\python_work\My_markdown\specific work\assets\image-20240408105938739.png)
+
+不错的算法比较的展示方式
