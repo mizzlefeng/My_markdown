@@ -188,6 +188,10 @@ NetMHCIIpan-3.2、PUFFIN、DeepSeqPanII、MHCAttnNet
 
 MHC-II的伪序列Q‘：Y：34*d
 
+![image-20240409102636652](D:\python_work\My_markdown\specific work\assets\image-20240409102636652.png)
+
+肽序列的L是由前三个pad，后三个pad，并且中间由21个位置pad，即一共长度是21+3*2=27。肽序列不足21长度的，进行pad补全。
+
 ### BICL
 
 binding interaction convolutional layer：结合相互作用卷积层。通过考虑肽X的所有可能的结合核心，获得肽X与MHC-II分子Y之间相互作用的表示。传统的基于序列的CNN中，输入序列共享相同的核（过滤器）。但是在这个问题中，每个MHC-II类分子具有不同的结合偏好。
