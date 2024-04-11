@@ -240,6 +240,6 @@ BD2016：[NetMHCIIpan 3.2 - DTU Health Tech - Bioinformatic Services](https://se
 
 AUC、PCC
 
-![image-20240408105938739](assets\image-20240408105938739.png)
+![image-20240408105938739](./assets/image-20240408105938739.png)
 
 不错的算法比较的展示方式
