@@ -180,7 +180,7 @@ NetMHCIIpan-3.2、PUFFIN、DeepSeqPanII、MHCAttnNet
 3. 使用全连接层和max-pooling层来提取肽和MHC-II分子的相互作用
 4. 输出层获得结合亲和力
 
-![image-20240322112418974](./assets\image-20240322112418974.png)
+![image-20240322112418974](./assets/image-20240322112418974.png)
 
 ### 输入层
 
