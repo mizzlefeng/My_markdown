@@ -202,11 +202,11 @@ $$C_{i,k}^{\left( 0 \right)} = f\left( {f\left( {{W_k}Y} \right){X_{i:i + M - 1}
 
 ### 最大池化和输出层
 
-使用N个全连接层和一个max-pooling层获取肽X和MHC-II类分子Y之间的相互作用的表示$$g \in {R^{b\left( N \right)}}$$：
+使用N个全连接层和一个max-pooling层获取肽X和MHC-II类分子Y之间的相互作用的表示$$g \in {R^{b \left( N \right)}}$$：
 
 $$C_i^{\left( n \right)} = f\left( {C_{_i}^{\left( {n - 1} \right)}{W^{\left( n \right)}} + {b^n}} \right)$$
 
-$${g_j} = \max \left\{ {C_{i,j}^{\left( N \right)},C_{2,j}^{\left( N \right)},...,C_{L - M + 1,j}^{\left( N \right)}} \right\}$$
+$${g_j} = \max\left\{ {C_{i,j}^{\left( N \right)},C_{2,j}^{ \left( N \right)},...,C_{L - M + 1,j}^{ \left( N \right)}} \right\}$$
 
 使用输出层来预测结合亲和力：
 
