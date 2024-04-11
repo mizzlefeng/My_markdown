@@ -180,7 +180,7 @@ NetMHCIIpan-3.2、PUFFIN、DeepSeqPanII、MHCAttnNet
 3. 使用全连接层和max-pooling层来提取肽和MHC-II分子的相互作用
 4. 输出层获得结合亲和力
 
-![image-20240322112418974](D:\python_work\My_markdown\specific work\assets\image-20240322112418974.png)
+![image-20240322112418974](./assets\image-20240322112418974.png)
 
 ### 输入层
 
@@ -188,7 +188,7 @@ NetMHCIIpan-3.2、PUFFIN、DeepSeqPanII、MHCAttnNet
 
 MHC-II的伪序列Q‘：Y：34*d
 
-![image-20240409102636652](D:\python_work\My_markdown\specific work\assets\image-20240409102636652.png)
+![image-20240409102636652](assets/image-20240409102636652.png)
 
 肽序列的L是由前三个pad，后三个pad，并且中间由21个位置pad，即一共长度是21+3*2=27。肽序列不足21长度的，进行pad补全。
 
