@@ -206,8 +206,6 @@ $$C_{i,k}^{\left( 0 \right)} = f\left( {f\left( {{W_k}Y} \right){X_{i:i + M - 1}
 
 $$C_i^{\left( n \right)} = f\left( {C_{_i}^{\left( {n - 1} \right)}{W^{\left( n \right)}} + {b^n}} \right)$$
 
-输出为：
-
 $${{g}_{j}}=max\left\{ C_{i,j}^{\left( N \right)},C_{2,j}^{\left( N \right)},...,C_{L-M+1,j}^{\left( N \right)} \right\}$$
 
 使用输出层来预测结合亲和力：

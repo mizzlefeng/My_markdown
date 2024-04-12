@@ -1883,3 +1883,13 @@ PRF1	chr10	70600541	70600541	G	A	exonic
 <!--stackedit_data:
 eyJoaXN0b3J5IjpbLTQyNjczNzc5MF19
 -->
+
+## 基因型./.
+
+vcf 文件中很多snp在某些样品中是缺失的，也就是基因型为 "./." 。如果缺失率较高，这种snp位点在很多分析中是不能用的，需要去掉。
+
+```bash
+vcftools  --vcf snp.vcf  --recode --recode-INFO-all --stdout  --max-missing 1 > snp.new.vcf
+```
+
+**--max-missing 后跟的值为 0-1 ，1代表不允许缺失，0代表允许全部缺失**
