@@ -1669,7 +1669,7 @@ cat config | xargs -I {} -P 5 bash -c '
    - 使用`QUAL`列过滤低质量变异。通常，会选择一个阈值（如`QUAL > 30`或更高）来确保变异的可信度。
    - 使用`FILTER`列（如果存在）来去除未通过质控的变异。
 
-2. **过滤基于频率的变异**：
+2. **过滤基于频率的变异（common variants）**：
    - 使用`ExAC_ALL`, `ExAC_EAS`, `gnomAD_exome_ALL`, `gnomAD_exome_EAS`等列去除常见变异。例如，你可能想去除所有在一般人群中频率高于0.01（1%）的变异。
 
 3. **过滤基于功能的变异**：

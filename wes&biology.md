@@ -29,6 +29,70 @@ https://www.bilibili.com/video/BV1794y1A7g9/?spm_id_from=pageDriver&vd_source=09
 根据2015年出的ACMG指南，将所有的变异分为5类：
 ![image-20240418110351176](./assets/image-20240418110351176.png)
 
+### 数据库的使用
+
+![image-20240418150546590](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240418150546590.png)
+
+### 预测软件
+
+![image-20240418150906820](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240418150906820.png)
+
+![image-20240418150940938](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240418150940938.png)
+
+![image-20240418151241043](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240418151241043.png)
+
+![image-20240418151230240](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240418151230240.png)
+
+![image-20240418151929627](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240418151929627.png)
+
+![image-20240418152103120](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240418152103120.png)
+
+![image-20240418152143210](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240418152143210.png)
+
+![image-20240418152629636](C:\Users\DELL\AppData\Roaming\Typora\typora-user-images\image-20240418152629636.png)
+
+### 过滤流程
+
+![image-20240419100454106](./assets/image-20240419100454106.png)
+
+### 人群数据过滤之Varcards
+
+![image-20240419101141120](./assets/image-20240419101141120.png)
+
+example：
+
+![image-20240419101330216](./assets/image-20240419101330216.png)
+
+按照这种固定的格式：ITGB3:p.R88X
+
+这是PM2的证据
+
+![image-20240419101740665](./assets/image-20240419101740665.png)
+
+### ACMG现成工具wintervar
+
+![image-20240419102647290](./assets/image-20240419102647290.png)
+
+[ACMG/AMP 2015 指南的 InterVar-Genetic 变异解释 (wglab.org)](https://wintervar.wglab.org/)
+
+### ACMG现成工具Franklin
+
+![image-20240419102846194](./assets/image-20240419102846194.png)
+
+### 同义突变
+
+找隐形的纯合突变没有，可以关注两点：
+1.Bam文件看探针是否捕获了所有外显子区域
+2.同义突变是否有可能影响表型或者说非编码区的变异。
+
+
+
+### OMIM
+
+观察具体某个疾病
+
+
+
 # 专业术语
 
 ## 基因结构
@@ -154,6 +218,30 @@ UTR的全称是“Untranslated Region”，中文翻译为“非翻译区”。*
 
 作用也是帮助mRNA跨过核膜，进入胞质，并且增加了mRNA在胞质中存在的稳定性。因为mRNA的降解过程是随着时间延长，A尾逐渐变短；
 
+## 突变相关
+
+### 复合杂合突变
+
+复合杂合突变，就是双等位突变。
+
+每条染色体都突变了，都不是野生性染色体，但是两条染色体突变产生的[等位基因](https://www.zhihu.com/search?q=等位基因&search_source=Entity&hybrid_search_source=Entity&hybrid_search_extra={"sourceType"%3A"answer"%2C"sourceId"%3A424944267})类型又不一样。
+
+举例如下图，这里只以碱基替换为例，其实换成其他的突变比如InDel，概念同样适用。
+
+![img](https://pica.zhimg.com/v2-81f57ae9bdb15ba4d7233fbc52152b3d_r.jpg?source=1def8aca)
+
+**野生型**WT中，两条染色体都是正常染色体，基因型AA；
+突变体MT1就是**杂合**突变，两条染色体一条正常A，一条突变为a1，基因型为Aa1；
+突变体MT2就是**纯合**突变，两条染色体都突变为a2，基因型为a2a2；
+突变体MT3就是**双等位突变**，也就是你说的**复合杂合突变**，两条染色体都有突变，但突变得到了不同的等位基因，两个又不一样，一个突变成了为a1，另一个突变成了a3，基因型为a1a3.
+一个基因突变掉后可以产生很多等位基因，突变是随机的，突变类型是多样的，所以就会有不同的等位基因形式，形成一系列的复等位基因集合。基因突变的多方向性是复等位基因存在的基础。
+
+### 疾病共分离
+
+在家系的胚系突变研究中，**疾病共分离指的是一个遗传突变与特定疾病表型在家族中的共同传递模式**。这意味着在家系中，**如果某个遗传突变与一种疾病有关联，那么携带这种突变的家族成员也更有可能表现出这种疾病的特征**。
+
+具体来说，当研究遗传性疾病时，科学家会观察**一个特定的突变是否在所有或多数表现病状的家族成员中出现，而不出现在健康的家族成员中**。如果一个突变与疾病表型在多代家族成员中一致地共分离，这通常强烈表明该突变是导致疾病的致病因子。这种模式有助于确认突变的致病性，是遗传研究中一个重要的工具。通过这种方法，研究者可以更准确地识别和确认哪些遗传变异与特定的遗传疾病相关。
+
 # 生物学问题
 
 ## DNA 中的 3' 端、 5' 端是什么意思？
@@ -169,3 +257,17 @@ DNA的结构由磷酸集团、五碳糖和碱基构成。
 像这样很多个核苷酸通过磷酸二酯键连接，形成的长链就是核酸。
 
 橙色的数字代表五碳糖的碳位序号。显然，五碳糖共有5个碳位。化学上规定，氧原子右侧的第1个碳原子为1号碳位，顺时针方向依次计数标号。
+
+## 如果疾病是AR(常染色体隐性遗传)，应该先找哪些突变？
+
+AR的话，杂合子不致病。所以应该首先找纯合突变，其次看看有没有出现复合杂合突变的。
+
+## 同义突变如何改变一个基因的功能呢？
+
+
+
+氨基酸没变，可能的机制是影响RNA剪接。
+
+可以用预测软件，最好做实验验证（体外的迷你基因实验[mRNA异常剪接体外验证实验—Minigene splicing assay - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/361370572)）。可能发生了移码。（改变剪接，最后提前终止）
+
+![image-20240419110103859](./assets/image-20240419110103859.png)
