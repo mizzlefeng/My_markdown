@@ -45,6 +45,18 @@ print(embedding.weight)
 
 索引操作！！！！！！！！！
 
+[PyTorch中的nn.Embedding：深入解析与实践应用-百度开发者中心 (baidu.com)](https://developer.baidu.com/article/details/3267445)
+
+- `num_embeddings`（必需）：嵌入层中可能的嵌入向量数量。这个值应该大于或等于你的数据集中最大的整数索引加1。
+- `embedding_dim`（必需）：每个嵌入向量的维度。这个值可以根据你的具体任务和数据集进行调整。
+- `padding_idx`（可选）：如果提供了，则此索引的嵌入向量将全为零，并且不会进行梯度更新。这在处理变长序列时，对序列进行填充（padding）非常有用。
+- `max_norm`（可选）：如果提供了，则嵌入向量将被缩放，使得它们的最大范数不会超过这个值。
+- `norm_type`（可选）：用于计算嵌入向量范数的类型。默认为2，表示使用L2范数。
+- `scale_grad_by_freq`（可选）：如果设置为True，则对于每个嵌入向量，其梯度将根据其在训练数据中出现的频率进行缩放。这有助于平衡稀有和常见特征的更新。
+- `sparse`（可选）：如果设置为True，则嵌入层将使用稀疏梯度更新，这可能会加速训练过程并减少内存使用。
+
+![img](./assets/v2-a1717e9134c63c4db4ef80f238aa5162_r.jpg)
+
 ```python
 torch.Size([2, 6])
 torch.Size([2, 6, 4])
