@@ -35,7 +35,7 @@ git init MedFollowUp
 git status # 查看库的状态
 ```
 
-![输入图片说明](/imgs/2024-02-01/ZEiOl9wRt4brKgpQ.png)
+![输入图片说明](./assets/ZEiOl9wRt4brKgpQ.png)
 
 ## git add & commit
 
@@ -85,13 +85,13 @@ git config --global user.name "起个名字"
 git config --global user.email "你的邮箱"
 ssh-keygen -t rsa -C "你的邮箱"  三个连续回车，设置密码为空
 ```
-![输入图片说明](/imgs/2024-02-01/Rq7mjnLSdiq7CJaY.png)
+![输入图片说明](./assets/Rq7mjnLSdiq7CJaY.png)
 
 - [x] 在C盘.ssh路径下有id_rsa和id_rsa.pub，使用记事本打开id_rsa.pub复制里面的秘钥
 - [x] 打开Github，在Settings中有SSH and GPG keys，选择SSH keys新增。
 - [x] 使用ssh -T git@github.com来检测是否添加成功。
 
-![输入图片说明](/imgs/2024-02-01/quy6z7tqF3TyEPFq.png)
+![输入图片说明](./assets/quy6z7tqF3TyEPFq.png)
 然后使用pycharm里的Git进行推送就可以了
 ```
 git push -u origin master
