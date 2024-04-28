@@ -1846,7 +1846,13 @@ VCF（Variant Call Format）文件格式被广泛用来存储基因组变异信�
 
 在使用自动化工具处理VCF文件时，这些工具通常会有内置的逻辑来区分SNV和INDEL。例如，使用生物信息学软件包如`pysam`或`bcftools`时，它们可以解析VCF文件，并根据REF和ALT字段的长度差异来自动识别INDELs和SNVs。
 
+## 常见变异过滤参数
 
+![image-20240428150824258](./assets/image-20240428150824258.png)
+
+### 可选变异过滤参数-MAF
+
+![image-20240428150906751](./assets/image-20240428150906751.png)
 
 # 问题
 
@@ -1893,3 +1899,4 @@ vcftools  --vcf snp.vcf  --recode --recode-INFO-all --stdout  --max-missing 1 > 
 ```
 
 **--max-missing 后跟的值为 0-1 ，1代表不允许缺失，0代表允许全部缺失**
+
