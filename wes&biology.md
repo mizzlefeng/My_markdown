@@ -415,6 +415,22 @@ AR的话，杂合子不致病。所以应该首先找纯合突变，其次看看
 
 ![image-20240419110103859](./assets/image-20240419110103859.png)
 
+## 高通量测序中，read、contig和Scaffold分别是什么？
+
+1.什么是Reads?
+
+高通量测序平台产生的序列就称为reads。
+
+2.什么是Contig？
+
+拼接软件基于reads之间的overlap区，拼接获得的序列称为Contig（重叠群）。
+
+3.什么是Scaffold？
+
+基因组de novo测序，通过reads拼接获得Contigs后，往往还需要构建454 Paired-end库或Illumina Mate-pair库，以获得一定大小片段（如3Kb、6Kb、10Kb、20Kb）两端的序列。基于这些序列，可以确定一些Contig之间的顺序关系，这些先后顺序已知的Contigs组成Scaffold。
+
+
+
 ## 生物观？
 
 ### 大局观
@@ -459,11 +475,13 @@ AR的话，杂合子不致病。所以应该首先找纯合突变，其次看看
 
 文献报道，50X情况下，<27%的变异需要考虑嵌合体的可能。我的经验加深WES<30%需要考虑嵌合体。
 
+## 体细胞突变和胚系突变怎么区分，VAF？
 
+根据测序结果，可以通过突变频率（ Variant Allele Fraction，VAF）初步判断是体系突变还是胚系突变。理论上，一般**胚系突变的VAF值是50%**（杂合）或者**100%**（纯合），但在实际项目中，**也会将50%左右（如40%~60%）认为是胚系的杂合突变**，**90%~100%认为是胚系的纯合突变**，而其他比例的突变更可能是体系突变。
 
+https://zhuanlan.zhihu.com/p/664963706
 
-
-
+[VAF:Variant Allel Frequency简介-腾讯云开发者社区-腾讯云 (tencent.com)](https://cloud.tencent.com/developer/article/1556025)
 
 # 细胞与分子遗传学基础
 

@@ -909,3 +909,11 @@ s = '{"name": "wade", "age": 54, "gender": "man"}'
 json.loads(s)
 ```
 
+# 常见设置
+
+## vscode调试当前文件
+
+```shell
+"cwd":"${fileDirname}"
+```
+

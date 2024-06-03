@@ -1,4 +1,4 @@
-# 安装软件及数据库
+# t安装软件及数据库
 
 ## 安装fastp
 
@@ -227,6 +227,15 @@ annotate_variation.pl -downdb -webfrom annovar avdblist ./ -buildver hg38
 # 或者
 wget http://www.openbioinformatics.org/annovar/download/hg38_avdblist.txt.gz ./ 
 
+# 官方方法
+annovar_script_file=~/software/annovar
+humandb=~/software/annovar/humandb/hg38_humandb
+${annovar_script_file}/annotate_variation.pl -downdb -buildver hg38 -webfrom annovar dbnsfp47a ./
+
+
+
+
+nohup wget -c http://www.openbioinformatics.org/annovar/download/hg38_gnomad40_exome &
 #下面是所需数据库
 nohup wget -c http://www.openbioinformatics.org/annovar/download/hg38_refGeneMrna.fa.gz &
 nohup wget -c http://www.openbioinformatics.org/annovar/download/hg38_refGene.txt.gz &
@@ -277,6 +286,77 @@ nohup wget -c http://www.openbioinformatics.org/annovar/download/hg38_esp6500siv
 nohup wget -c http://www.openbioinformatics.org/annovar/download/hg38_esp6500siv2_all.txt.idx.gz & 
 nohup wget -c http://www.openbioinformatics.org/annovar/download/hg38_1000g2015aug.zip &
 ```
+
+### 更新clinvar db
+
+```shell
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar_20240502.vcf.gz
+wget ftp://ftp.ncbi.nlm.nih.gov/pub/clinvar/vcf_GRCh38/clinvar_20240502.vcf.gz.tbi
+vt decompose clinvar_20240502.vcf.gz -o temp.split.vcf
+prepare_annovar_user.pl   -dbtype clinvar_preprocess2 temp.split.vcf -out temp.split2.vcf
+vt normalize temp.split2.vcf -r ~/project/seqlib/GRCh38/old/GRCh38.fa -o temp.norm.vcf -w 2000000
+prepare_annovar_user.pl -dbtype clinvar2 temp.norm.vcf -out hg38_clinvar_20180603_raw.txt
+index_annovar.pl hg38_clinvar_20180603_raw.txt -out hg38_clinvar_20180603.txt -comment comment_20180708.txt
+
+
+
+git clone https://github.com/mobidic/update_annovar_db.git
+python update_resources.py -d clinvar -hp ~/software/annovar/humandb/hg38_humandb -a ~/software/annovar -g GRCh38
+
+~/software/annovar/index_annovar.pl clinvar_20240502.txt -out hg38_clinvar_20240502.txt -comment comment_clinvar_20240502.txt
+```
+
+### 更新cosmic db
+
+```shell
+# step1 生成base64编码
+echo 'sidufeng@seu.edu.cn:Fsd123...' | base64
+# c2lkdWZlbmdAc2V1LmVkdS5jbjpGc2QxMjMuLi4K
+
+# step2 根据编码填入到Authorization: Basic {}的中括号中得到真实文件链接
+curl -H "Authorization: Basic c2lkdWZlbmdAc2V1LmVkdS5jbjpGc2QxMjMuLi4K" "https://cancer.sanger.ac.uk/api/mono/products/v1/downloads/scripted?path=grch38/cosmic/v99/Cosmic_GenomeScreensMutant_Tsv_v99_GRCh38.tar&bucket=downloads"
+
+# step3 填入真实链接，设置output名称
+curl "https://cosmic-downloads-production.cog.sanger.ac.uk/grch38/cosmic/v99/Cosmic_GenomeScreensMutant_Tsv_v99_GRCh38.tar?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Credential=KRV7P7QR9DL41J9EWGA2%2F20240507%2Feu-west-1%2Fs3%2Faws4_request&X-Amz-Date=20240507T024630Z&X-Amz-Expires=3600&X-Amz-Signature=da7cd735dfc6029f2279f28e3ac0d13715c09b72158f31b53a64dd84f8d856f7&X-Amz-SignedHeaders=host&response-content-disposition=attachment%3B%20filename%3D%22Cosmic_GenomeScreensMutant_Tsv_v99_GRCh38.tar%22&x-id=GetObject" --output Cosmic_GenomeScreensMutant_Tsv_v99_GRCh38.tar
+
+
+#下载4个文件：
+Cosmic_GenomeScreensMutant_Tsv_v99_GRCh38.tar
+Cosmic_GenomeScreensMutant_VcfNormal_v99_GRCh38.tar
+Cosmic_NonCodingVariants_Tsv_v99_GRCh38.tar
+Cosmic_NonCodingVariants_Vcf_v99_GRCh38.tar
+
+for file in *.tar; do
+    tar -xvf "$file"
+done
+
+echo -e '#Chr\tStart\tEnd\tRef\tAlt\tCOSMIC99' > hg38_cosmic99.txt
+./prepare_annovar_user.pl -dbtype cosmic Cosmic_GenomeScreensMutant_v99_GRCh38.tsv -vcf Cosmic_GenomeScreensMutant_Normal_v99_GRCh38.vcf >> hg38_cosmic99.txt
+
+./prepare_annovar_user.pl -dbtype cosmic Cosmic_NonCodingVariants_v99_GRCh38.tsv -vcf Cosmic_NonCodingVariants_Normal_v99_GRCh38.vcf >> hg38_cosmic99.txt
+
+
+~/software/annovar/index_annovar.pl hg38_cosmic99.txt
+
+sort -k1 -V -s -t ' ' hg38_cosmic99.txt > hg38_cosmic99.sorted.txt #排序
+# sort -k1,1V -k2,2n -k3,3n hg19_cosmic95_noncoding.txt > hg19_cosmic95_noncoding_sort.txt
+echo -e '#Chr\tStart\tEnd\tRef\tAlt\tCOSMIC99' > newfile.txt
+cat hg38_cosmic99.sorted.txt >> newfile.txt
+mv newfile.txt hg38_cosmic99.sorted.txt
+
+perl ~/software/annovar/index_annovar.pl hg38_cosmic99.sorted.txt
+cp hg38_cosmic99.sorted.txt ../hg38_cosmic99.txt
+cp hg38_cosmic99.sorted.txt.newdb.idx ../hg38_cosmic99.txt.idx
+
+# 注释后txt列数不一致，可能是注释错误的原因，尝试将cosmic第6列的逗号替换为分号。
+awk 'BEGIN {FS=OFS="\t"} {gsub(/,/, ";", $6)} 1' hg38_cosmic99.txt > hg38_cosmic99_new.txt
+```
+
+
+
+
+
+
 
 ## 安装cnvkit
 
@@ -373,6 +453,81 @@ make install
 export PATH=/path/to/bin:$PATH
 ```
 
+## 下载千人基因组数据
+
+这部分主要用来对germline的突变进行对比，观察突变在正常人群和患者人群的突变数量是否存在显著差异。即拿到的数据只有患者，没有正常对照，可以使用千人基因组的数据作为正常对照。
+
+三个中国人群：CDX（西双版纳的傣族人群 n=109）、CHB（北京人，基本代表北方人群 n=112）、CHS（南方人群 n=171）
+
+```shell
+下面的网址是最终和最完整的文件，使用它。包含了所有样本的基因型 没有DP
+# http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20220422_3202_phased_SNV_INDEL_SV/
+
+下面的是1000 Genomes on GRCh38，只是双等位基因，也可以用，有样本信息 有DP且高深度
+# http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/release/20190312_biallelic_SNV_and_INDEL/
+
+下面的网址是1000 Genomes 30x on GRCh38，超级大，最全，但是注释文件不包含样本名，没有样本信息，是按照进行统计的一些信息，比如AF
+# http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000G_2504_high_coverage/working/20201028_3202_raw_GT_with_annot/
+
+
+下面的是1000 Genomes phase 3 release，但是参考基因组为GRCh37
+# http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/release/20130502/
+
+git clone https://ghproxy.net/https://github.com/vcftools/vcftools.git
+sudo apt install tabix
+/mnt/f/1kg/vcftools/src/perl/vcf-subset
+http://ftp.1000genomes.ebi.ac.uk/vol1/ftp/data_collections/1000_genomes_project/release/20190312_biallelic_SNV_and_INDEL/ALL.chrX.shapeit2_integrated_snvindels_v2a_27022019.GRCh38.phased.vcf.gz
+
+```
+
+```shell
+# 合并所有vcf文件
+bed=~/database/ref/hg38/bed/hg38.bed
+bcftools concat -a -O z -o merged_exon.vcf.gz $(ls 1kGP*.vcf.gz | sort -V)
+# 构建索引 -s 为染色体号的列，从1开始计算 -b 为具体位置的开始列 -e 为具体位置的结束列，这里开始于结束时同一列 -f 覆盖已经有的索引
+tabix -f -s 1 -b 2 -e 2 merged_exon.vcf.gz
+#bcftools index merged.vcf.gz
+# 选择特定人群 1000G_chinese.txt是样本名列表
+bcftools view -O z --threads 10 --no-update -S 1000G_chinese.txt merged.vcf.gz -o 1000G_chinese.vcf.gz
+
+# 选择外显子区域
+# bed=~/database/ref/hg38/bed/hg38.bed
+bed=interest_gene.bed
+bcftools view -R $bed -O z 1000G_chinese.vcf.gz -o 1000G_chinese_interest.vcf.gz
+# 按照染色体列和POS列重排
+bcftools view --header-only -O v 1000G_chinese_interest.vcf.gz -o header.vcf
+bcftools view --no-header -O v 1000G_chinese_interest.vcf.gz -o content.vcf
+cat content.vcf | sort -k1,1 -k2,2n > content_sorted.vcf
+cat header.vcf content_sorted.vcf > 1kg_chinese_interest.vcf
+bgzip -f 1kg_chinese_interest.vcf
+tabix -p vcf 1kg_chinese_interest.vcf.gz
+
+# bedtools intersect -header -a 1000G_chinese.vcf.gz -b $bed -wa | bgzip -c > bedtools_exons_only.vcf.gz
+
+```
+
+```shell
+# 注释
+annovar_script_file=~/software/annovar
+humandb=~/software/annovar/humandb/hg38_humandb
+${annovar_script_file}/table_annovar.pl ./1kg_chinese_interest.vcf.gz $humandb \
+-buildver hg38 --thread 5 \
+-out ./1kg_chinese \
+-remove \
+-protocol refGene,clinvar_20240502,1000g2015aug_eas,exac03,gnomad40_exome,avsnp151,dbnsfp47a,dbscsnv11 \
+-operation g,f,f,f,f,f,f,f \
+-nastring . \
+-vcfinput
+
+echo 'OK!'
+
+mv 1kg_chinese.hg38_multianno.txt 1kg_chinese.hg38.txt
+less 1kg_chinese.hg38_multianno.vcf | grep "#CHROM" > vcfhead
+less 1kg_chinese.hg38_multianno.vcf|grep "chr"|grep -v "##" > vcfcontent
+cat vcfhead vcfcontent > 1kg_chinese.hg38.vcf
+
+```
+
 
 
 
@@ -411,7 +566,7 @@ export -f fastparal
 cat $config | parallel -j$num fastparal
 ```
 
-#### 执行
+**执行**
 
 ```bash
 # 自己集群
@@ -645,6 +800,8 @@ cat $config | parallel -k -j$num gatkHC
 
 echo '-----------------2.CombineGVCFs----------------------'
 # CombineGVCFs适用于小于1000个样本的数据
+# https://www.jianshu.com/p/b2eff121fca8
+# GATK4 多个样本GenotypeGVCFs前用 CombineGVCFs还是GenomicsDBImport
 echo -e "\nstart CombineGVCFs" `date`
 realpath ${hcdir}/*.g.vcf.gz > ${hcdir}/gvcf.list
 gatk --java-options "-Xmx24g" CombineGVCFs \
@@ -752,190 +909,325 @@ cat WES_filter_vqsr.vcf|grep "PASS"|grep -v "#"> output
 cat header output > wes.vcf
 ```
 
-#### hg19
+### Somatic  mutation
+
+![image-20240429141747959](./assets/image-20240429141747959.png)
+
+#### 检测原理
+
+与HaplotypeCaller一样，Mutect2通过在active region中对单倍型（决定同一性状的紧密连锁的基因构成的基因型）进行局部重新组装来判断SNV和InDel。 也就是说，当Mutect2遇到显示体细胞变异迹象的active region时，它会丢弃现有的映射信息，并完全重新组装该区域中的reads，以生成候选变异单倍型。 像HaplotypeCaller一样，Mutect2然后通过Pair-HMM算法将每个reads与每个单倍型对齐，以获得似然矩阵。 最后，**它应用贝叶斯体细胞似然模型来获得体细胞变异与测序错误的对数比。**
+
+mutect2参数解释：
+
+目前mutect2 v4.1.0.0是支持多个样本的综合分析的。 里面有三种模式（1）tumor-normal mode。 （2） tumor-only mode。 （3） mitochondrial mode。
+a 在v4.1，不再需要用**-tumor 这个参数去特异的设置tumor 样本**。 仅仅是需要用**-normal** 这个参数去设置正常样本，如果你有正常样本的话。
+b 在4.0.4.0 开始，GATK提倡使用默认参数**--af-of-alleles-not-in-resource**， 工具中不同的模型的参数设置不同。 tumor-only calling 设置默认的是5e-8. tumor-normal calling 设置的是1e-6。 以及mitochondrial mode设置的是4e-3。 在以前的版本里，默认这是的是0.001， 这个是人类的平均异质性。 关于其他的物种，把--af-of-alleles-not-in-resource 改成1。
 
 ```shell
-#gatkbx.sh
-#! /bin/bash
-ref=/home/fsd/liver_wes/hg19/hg19.fasta
-snp=/home/fsd/liver_wes/hg19/database/dbsnp_138.hg19.vcf
-indel=/home/fsd/liver_wes/hg19/database/Mills_and_1000G_gold_standard.indels.hg19.sites.vcf
-bed=/home/fsd/liver_wes/hg19/bed/hg19_exon.bed
-
-config=$1
-cat $config  | while read id
-do
-	echo "start $config"
-	startTime=`date +"%Y-%m-%d %H:%M:%S"`
-	if [ ! -f ${id}_marked.bam ]
-	then
-		echo -e "\nstart MarkDuplicates for ${id}" `date`
-		gatk --java-options "-Xmx20G -Djava.io.tmpdir=./" MarkDuplicates \
-			-I ${id}.bam \
-			--REMOVE_DUPLICATES true \
-			-O ${id}_marked.bam \
-			-M ${id}.metrics \
-			1>${id}_log.mark 2>&1 
-		echo "end MarkDuplicates for ${id}" `date`
-		samtools index ${id}_marked.bam # 下一步需要索引文件
-	fi
-	
-	if [ ! -f ${id}_recal.table ]
-	then
-		echo -e "\nstart BaseRecalibrator for ${id}" `date`
-    	  gatk --java-options "-Xmx20G -Djava.io.tmpdir=./"  BaseRecalibrator \
-      		-R $ref \
-      		-I ${id}_marked.bam \
-      		--known-sites $snp \
-      		--known-sites $indel \
-      		-L $bed \
-      		-O ${id}_recal.table \
-      		1>${id}_log.recal 2>&1
-    	echo "end BaseRecalibrator for ${id}" `date`
-	fi
-	
-	if [ ! -f ${id}_bqsr.bam ]
-	then
-		echo -e "\nstart BQSR for ${id}" `date`
-    	 gatk --java-options "-Xmx20G -Djava.io.tmpdir=./"   ApplyBQSR \
-     		-R $ref \
-     		-I ${id}_marked.bam \
-     		-bqsr ${id}_recal.table \
-     		-L $bed \
-     		-O ${id}_bqsr.bam \
-     		1>${id}_log.ApplyBQSR  2>&1
-    	echo "end BQSR for ${id}" `date`
-	fi
-	
-	endTime=`date +"%Y-%m-%d %H:%M:%S"`
-	st=`date -d  "$startTime" +%s`
-	et=`date -d  "$endTime" +%s`
-	sumTime=$(($et-$st))
-	echo -e "\n样本："${id}"  耗时："$sumTime"秒！"  
-done
-
-split -l 7 -d /home/fsd/liver_wes/align/config config_
-
-# gatkmain.sh  
-# 放到cpu跑，计算量小，这一批
-#! /bin/bash
-for config in config_00 config_01 config_02 config_03 config_04
-do
-	nohup bash gatkbx.sh $config &
-done
-
-# 放到gpu跑，计算量大，这一批
-for config in config_05 config_06 config_07 config_08 config_09
-do
-	nohup bash gatkbx.sh $config &
-done
+-L 分别为样本的Tumor 和Normal 的BAM文件，-tumor提供Tumor 样本的BAM文件对应的read group id（BAM头文件中的@RG->SM值），-normal提供正常样本的BAM的read group id。Mutect2可以据此排除Germline变异和个体特异性人工产物；如果tumor不能提供配对normal样本，得到的体细胞变异文件会产生更多假阳性。
+-R：参考基因组序列文件。
+ --native-pair-hmm-threads ： 通过Pair-HMM算法将每个reads与每个单倍型对齐获得似然矩阵所用线程数。
+--germline-resource：GATK数据库中hg19表明为Germline的突变位点。指定人群的germline信息来注释变异等位基因。
+--panel-of-normals：PoN(正常样本callset)定义了一个预过滤变异位点集。PoN不仅呈现了通常的germline变异位点，也呈现了测序数据引入的噪音，如测序bias或比对bias。默认情况下，出现在PoN中的变异位点不认为是tumor样本的somatic变异也不会进行重组装。如果tumor位点和PoN位点变异不是精确匹配，Mutect2也会重新组装此区域，在变异文件中输出此位点，并在Filter列标记为“panel_of_normals”。
 ```
 
-### mutect2找突变
+#### 检测步骤
+
+##### Overall
+
+1. 构建normal panel
+2. mutect2
+
+##### 构建normal panel以获得PON文件
+
+如果有多个normal.bam做对照，在开始之前，可以利用这些normal bam构建一个normal panel作为第2步原始候选变异检测的输入参数。
+
+对于多少个样本可以构成PON，并没有确切的说法，但GATK论坛给的建议是最少用40个样本来构建。
 
 ```shell
-# 单样本测试
-
-T=FOR25031705F2D1L1_S48_bqsr.bam
-N=EDT14082131B1D1L1_S85_bqsr.bam
-sample=FOR25031705F2D1L1_S48
-gatk --java-options "-Xmx30G -Djava.io.tmpdir=./" Mutect2 -R ${ref} \
-	-I ${T} -tumor  $(basename "$T" _bqsr.bam) \
-	-I ${N} -normal $(basename "$N" _bqsr.bam) \
-	-L ${bed}  \
-	-O ./mutect/${sample}_mutect2.vcf
-
-gatk --java-options "-Xmx20G -Djava.io.tmpdir=./" Mutect2 -R ${ref} \
-     -I ${T} -tumor  $(basename "$T" _bqsr.bam) \
-     -I ${N} -normal $(basename "$N" _bqsr.bam) \
-     -L ${bed}  \
-     -O ./mutect/${sample}_mutect2.vcf
-
-
-## mutect.sh
-#! /bin/bash
-ref=/home/fsd/liver_wes/hg38/Homo_sapiens_assembly38.fasta
-bed=/home/fsd/liver_wes/hg38/bed/exon.bed
-
-cat config2 | while read id
-do
-	startTime=`date +"%Y-%m-%d %H:%M:%S"`
-	arr=(${id})
-	sample=${arr[1]}
-	T=${arr[1]}_bqsr.bam
-	N=${arr[0]}_bqsr.bam
-	echo "start Mutect2 for ${id}" `date`
-	gatk  --java-options "-Xmx20G -Djava.io.tmpdir=./"  Mutect2 -R ${ref} \
-	-I ${T} -tumor  $(basename "$T" _bqsr.bam) \
-	-I ${N} -normal $(basename "$N" _bqsr.bam) \
-	-L ${bed}  \
-	-O ./mutect/${sample}_mutect2.vcf
-
-	gatk  FilterMutectCalls \
-  -R ${ref} \
-	-V ./mutect/${sample}_mutect2.vcf \
-	-O ./mutect/${sample}_somatic.vcf
-	echo "end Mutect2 for ${id}" `date`
-
-	cat ./mutect/${sample}_somatic.vcf | perl -alne '{if(/^#/){print}else{next unless $F[6] eq "PASS";next if $F[0] =~/_/;print } }' > ./mutect/${sample}_filter.vcf
-done
-
-# 为了防止跑程序被杀死，我分成两份跑 -l 表示最多十行 -d 表示文件后缀是数字而不是字母
-# 其实消耗很小，感觉一批跑6个样本没问题
-split -l 3 -d /home/fsd/liver_wes/align/config2 config2_
-
-# gatkmutectbx.sh
-#! /bin/bash
-ref=/home/fsd/liver_wes/hg38/Homo_sapiens_assembly38.fasta
-bed=/home/fsd/liver_wes/hg38/bed/exon.bed
-
-config2=$1
-cat $config2 | while read id
-do
-	arr=(${id})
-	sample=${arr[1]}
-	T=${arr[1]}_bqsr.bam
-	N=${arr[0]}_bqsr.bam
-	startTime=`date +"%Y-%m-%d %H:%M:%S"`
-	echo "start Mutect2 for ${sample}" `date`
-	gatk --java-options "-Xmx20G -Djava.io.tmpdir=./" Mutect2 -R ${ref} \
-	-I ${T} -tumor  $(basename "$T" _bqsr.bam) \
-	-I ${N} -normal $(basename "$N" _bqsr.bam) \
-	-L ${bed}  \
-	-O ./mutect/${sample}_mutect2.vcf
-	
-	gatk  FilterMutectCalls \
-	-R ${ref} \
-	-V ./mutect/${sample}_mutect2.vcf \
-	-O ./mutect/${sample}_somatic.vcf
-	echo "end Mutect2 for ${id}" `date`
-
-	cat ./mutect/${sample}_somatic.vcf | perl -alne '{if(/^#/){print}else{next unless $F[6] eq "PASS";next if $F[0] =~/_/;print } }' > ./mutect/${sample}_filter.vcf
-	
-	endTime=`date +"%Y-%m-%d %H:%M:%S"`
-	st=`date -d  "$startTime" +%s`
-	et=`date -d  "$endTime" +%s`
-	sumTime=$(($et-$st))
-	echo -e "\n样本："${sample}"  耗时："$sumTime"秒！"  
-done
-
-# gatkmutectmain.sh  
-# 放到cpu跑，计算量小，这一批
-#! /bin/bash
-for config in config2_00 config2_01 config2_02 config2_03
-do
-	nohup bash gatkmutectbx.sh $config &
-done
-
-# 放到gpu跑，计算量大，这一批
-#! /bin/bash
-for config in config2_04 config2_05 config2_06 config2_07
-do
-	nohup bash gatkmutectbx.sh $config &
-done
+somatic_config是配对的，形式如下：
+EDT70180151F2D1L1_S169	ORA59042326K2D2L1_S170
+EDT92180208T1D2L1_S223	ORA70042252K2D1L1_S59
+EDT60175515T1D1L1_S139	ORA34042258K1D1L1_S140
+EDT88136487T1D1L1_S22	ORA90042263K1D1L1_S23
+EDT82235308T1D1L1_S58	ORA88043925K1D1L1_S59
+···
 ```
 
-### 过滤
+```shell
+#! /bin/bash
+num=$1
+echo "$num个任务并行执行..."
+source activate wes_program
+config=./somatic_config
+
+echo '-----------------1.1 Mutect_normal_only----------------------'
+gatkpon(){
+ref=~/database/ref/hg38/Homo_sapiens_assembly38.fasta
+bed=~/database/ref/hg38/bed/hg38.bed
+bqsrdir=../somatic_align/3.BQSR
+pondir=../somatic_align/4.PON
+
+arr=(${1})
+sample=${arr[1]}
+T=${arr[0]}_bqsr.bam
+N=${arr[1]}_bqsr.bam
+echo "Tumor:${T}	Nomal:${N}"
+startTime=`date +"%Y-%m-%d %H:%M:%S"`
+if [ ! -f ${pondir}/${sample}.vcf.gz ]
+then
+gatk Mutect2 -R ${ref} -I ${bqsrdir}/${N} -max-mnp-distance 0 -O ${pondir}/${sample}.vcf.gz 1> ${pondir}/${sample}_mutect2_normal.log 2>&1
+fi
+endTime=`date +"%Y-%m-%d %H:%M:%S"`
+st=`date -d  "$startTime" +%s`
+et=`date -d  "$endTime" +%s`
+sumTime=$(($et-$st))
+echo -e "\n样本："${N}"  耗时："$sumTime"秒！"
+}
+export -f gatkpon
+cat $config | parallel -k -j$num gatkpon
+
+echo '-----------------1.2 GenomicsDBImport----------------------'
+ref=~/database/ref/hg38/Homo_sapiens_assembly38.fasta
+bed=~/database/ref/hg38/bed/hg38.bed
+pondir=../somatic_align/4.PON
+af_only_gnomad=~/database/gatk_resource/hg38/af-only-gnomad.hg38.vcf.gz
+
+startTime=`date +"%Y-%m-%d %H:%M:%S"`
+gatk GenomicsDBImport -R ${ref} -L ${bed} --genomicsdb-workspace-path ${pondir}/pon_db $(ls ${pondir}/*.g.vcf.gz | awk '{print "-V "$0" "}') --max-num-intervals-to-import-in-parallel 5 --merge-input-intervals true 1> ${pondir}/GenomicsDBImport.log 2>&1
+
+endTime=`date +"%Y-%m-%d %H:%M:%S"`
+st=`date -d  "$startTime" +%s`
+et=`date -d  "$endTime" +%s`
+sumTime=$(($et-$st))
+echo -e "GenomicsDBImport finished!  耗时："$sumTime"秒！"
+
+echo '-----------------1.3 CreateSomaticPanelOfNormals----------------------'
+startTime=`date +"%Y-%m-%d %H:%M:%S"`
+gatk CreateSomaticPanelOfNormals -R ${ref} --germline-resource ${af_only_gnomad} -V gendb://${pondir}/pon_db -O ${pondir}/pon.vcf.gz 1> ${pondir}/CreateSomaticPanelOfNormals.log 2>&1
+
+endTime=`date +"%Y-%m-%d %H:%M:%S"`
+st=`date -d  "$startTime" +%s`
+et=`date -d  "$endTime" +%s`
+sumTime=$(($et-$st))
+echo -e "CreateSomaticPanelOfNormals finished!  耗时："$sumTime"秒！"
+
+
+# https://gatk.broadinstitute.org/hc/en-us/articles/360056138571-GenomicsDBImport-usage-and-performance-guidelines
+```
+
+```shell
+# 从db中生成合并的.g.vcf文件
+# https://gatk.broadinstitute.org/hc/en-us/articles/360035889971--How-to-Consolidate-GVCFs-for-joint-calling-with-GenotypeGVCFs
+gatk SelectVariants \
+    -R data/ref/ref.fasta \
+    -V gendb://my_database \
+    -O combined.g.vcf
+    
+# 若要添加新样本的变异数据，只要将新样本的gvcf信息添加到已有的数据库中即可。
+gatk GenomicsDBImport \
+    -V data/gvcfs/mother.g.vcf \
+    -V data/gvcfs/father.g.vcf \
+    -V data/gvcfs/son.g.vcf \
+    --genomicsdb-update-workspace-path existing_database
+    
+# GenomicsDBImport的使用
+# 基因组数据库导入-规定了大量的间隔时间。不建议在单个导入中使用超过100个间隔，这可能会影响性能。
+# 如果GVCF数据只存在于这些时间间隔内，性能可以通过合并输入间隔merge-input-intervals来提高。
+gatk=gatk
+# 必需的文件，具体格式参考GATK
+interval_list=chr.list
+# Java内存限制
+Xmx=100g
+Xms=10g
+# genomicsdb，必须是未创建的或者空的文件夹
+my_database=Genomicsdb
+# 每批次读入多少样本，默认 0, 表示一次性全部读入。注意，一次读入过多样本会发生错误，建议每次读入不多于100个;
+batch_size=1
+# gvcf文件列表，每行格式为“gvcf文件名路径”，具体格式参考GATK
+map_file=all.map
+# 每个batch的并行线程
+reader_threads=1
+#同时读入的最大intervals数量,值越高，速度越快，但消耗更多的内存，且需要有权限创建足够多的文件.
+num=26
+#缓存文件
+tmp=tmpdir2
+
+#第一次建库用的参数：
+# --genomicsdb-workspace-path $my_database \
+#向已存在的库添加新数据的参数：
+#--genomicsdb-update-workspace-path $my_database \
+$gatk --java-options "-Xmx$Xmx -Xms$Xms" \
+GenomicsDBImport \
+--genomicsdb-workspace-path $my_database \
+--intervals $interval_list \
+--batch-size  $batch_size \
+--sample-name-map $map_file \
+--reader-threads $reader_threads \
+--max-num-intervals-to-import-in-parallel $num \
+--tmp-dir ${tmp}
+```
+
+##### 获取原始候选变异Mutect2
+
+```shell
+#! /bin/bash
+num=$1
+echo "$num个任务并行执行..."
+source activate wes_program
+config=./somatic_config
+
+echo '-----------------Mutect2----------------------'
+gatkMutect(){
+ref=~/database/ref/hg38/Homo_sapiens_assembly38.fasta
+bed=~/database/ref/hg38/bed/hg38.bed
+af_only_gnomad=~/database/gatk_resource/hg38/af-only-gnomad.hg38.vcf.gz
+bqsrdir=../somatic_align/3.BQSR
+pondir=../somatic_align/4.PON
+mutectdir=../somatic_align/5.mutect
+
+arr=(${1})
+sample=${arr[1]}
+T=${arr[0]}_bqsr.bam
+N=${arr[1]}_bqsr.bam
+echo "Tumor:${T}	Nomal:${N}"
+startTime=`date +"%Y-%m-%d %H:%M:%S"`
+if [ ! -f ${mutectdir}/${sample}_somatic.vcf.gz ]
+then
+gatk --java-options "-Xmx20G" Mutect2 \
+     -R ${ref} \
+     -I ${bqsrdir}/${T} -tumor $(basename "$T" _bqsr.bam) \
+     -I ${bqsrdir}/${N} -normal $(basename "$N" _bqsr.bam) \
+     --germline-resource ${af_only_gnomad} \
+     --panel-of-normals ${pondir}/pon.vcf.gz \
+     --f1r2-tar-gz ${mutectdir}/${sample}_f1r2.tar.gz \
+     -L ${bed} \
+     --af-of-alleles-not-in-resource 0.0000025 \
+     -O ${mutectdir}/${sample}_somatic.vcf.gz
+fi
+endTime=`date +"%Y-%m-%d %H:%M:%S"`
+st=`date -d  "$startTime" +%s`
+et=`date -d  "$endTime" +%s`
+sumTime=$(($et-$st))
+echo -e "\n样本："${N}"  耗时："$sumTime"秒！"
+}
+export -f gatkMutect
+cat $config | parallel -k -j$num gatkMutect
+
+# 示例中的gnomAD资源af-only-gnomad_grch38.vcf.gz代表~200k个外显子组和~16k个基因组，示例中的数据是外显子组数据，因此我们将--af-of-alleles-not-in-resource调整为0.0000025=1 /（2 *外显子组样本数）=1/(2*200k)
+```
+
+
+
+##### 样本间污染评估及过滤
+
+这一步主要是为了获得配对样本的交叉污染估计文件calculatecontamination.table用来对原始候选体细胞突变进行筛选。
+
+- 对肿瘤BAM运行GetPileupSummaries以总结tumor样本在已知变异位点集上的reads支持情况。
+- 如果存在配对样本，会对正常样本运行GetPileupSummaries以总结tumor样本在已知变异位点集上的reads支持情况。
+- 对已知变异位点集采用CalculateContamination来估计污染比例，segments.table文件的最后一列用来判断突变位点是否为样本污的位点。
+
+**构建GetPileupSummaries必须的等位基因频率文件：**
+
+```shell
+
+# 以gnomAD resource为例，先用SelectVariants工具处理下，生成一个af-only-gnomad.hg38.SNP_biallelic.vcf.gz用于后续分析
+# https://www.bioinfo-scrounger.com/archives/699/
+# 其实这样生成的文件直接用可能会爆内存（下面链接给出详细的解释）：https://www.jianshu.com/p/d089eb34db8d
+ref=~/database/ref/hg38/Homo_sapiens_assembly38.fasta
+af_only_gnomad=~/database/gatk_resource/hg38/af-only-gnomad.hg38.vcf.gz
+gatk SelectVariants \
+-R ${ref} \
+-V ${af_only_gnomad} \
+--select-type-to-include SNP \
+--restrict-alleles-to BIALLELIC \
+-O af-only-gnomad.hg38.SNP_biallelic.vcf.gz
+
+# 或者直接从gatk-best-practices上下载small_exac_common_3.hg38.vcf.gz
+# https://console.cloud.google.com/storage/browser/gatk-best-practices/somatic-hg38
+# 建议直接下载
+```
+
+
+
+```shell
+# 配对样本的交叉污染估计及过滤
+#! /bin/bash
+num=$1
+echo "$num个任务并行执行..."
+source activate wes_program
+config=./somatic_config
+
+echo '-----------------FilterMutect----------------------'
+gatkFilter(){
+ref=~/database/ref/hg38/Homo_sapiens_assembly38.fasta
+bed=~/database/ref/hg38/bed/hg38.bed
+af_only_gnomad=~/database/gatk_resource/hg38/af-only-gnomad.hg38.vcf.gz
+variant=~/database/gatk_resource/hg38/small_exac_common_3.hg38.vcf.gz
+bqsrdir=../somatic_align/3.BQSR
+pondir=../somatic_align/4.PON
+mutectdir=../somatic_align/5.mutect
+
+
+arr=(${1})
+sample=${arr[1]}
+T=${arr[0]}_bqsr.bam
+N=${arr[1]}_bqsr.bam
+echo "Tumor:${T}	Nomal:${N}"
+startTime=`date +"%Y-%m-%d %H:%M:%S"`
+
+gatk GetPileupSummaries -R ${ref} -L ${bed} -V ${variant} -I ${bqsrdir}/${N} -O ${mutectdir}/${arr[1]}_normal-pileups.table
+
+gatk GetPileupSummaries -R ${ref} -L ${bed} -V ${variant} -I ${bqsrdir}/${T} -O ${mutectdir}/${arr[0]}_tumor-pileups.table
+
+gatk CalculateContamination -I ${mutectdir}/${arr[0]}_tumor-pileups.table -matched ${mutectdir}/${arr[1]}_normal-pileups.table -O ${mutectdir}/${arr[0]}_contamination.table
+
+gatk LearnReadOrientationModel -I ${mutectdir}/${sample}_f1r2.tar.gz \
+-O ${mutectdir}/${sample}_read-orientation-model.tar.gz
+
+gatk FilterMutectCalls -R ${ref} -V ${mutectdir}/${sample}_somatic.vcf.gz --contamination-table ${mutectdir}/${arr[0]}_contamination.table --ob-priors ${mutectdir}/${sample}_read-orientation-model.tar.gz -O ${mutectdir}/${arr[0]}_filtered.vcf.gz
+
+less ${mutectdir}/${arr[0]}_filtered.vcf.gz | perl -alne '{if(/^#/){print}else{next unless $F[6] eq "PASS";next if $F[0] =~/_/;print } }' > ${mutectdir}/${arr[0]}_filter_pass.vcf
+
+endTime=`date +"%Y-%m-%d %H:%M:%S"`
+st=`date -d  "$startTime" +%s`
+et=`date -d  "$endTime" +%s`
+sumTime=$(($et-$st))
+echo -e "\n样本："${N}"  耗时："$sumTime"秒！"
+}
+export -f gatkFilter
+cat $config | parallel -k -j$num gatkFilter
+
+```
+
+```shell
+
+mutectdir=../somatic_align/5.mutect
+config=./somatic_config
+cat $config | while read id
+do
+arr=(${id})
+sample=${arr[1]}
+less ${mutectdir}/${arr[0]}_filtered.vcf.gz | perl -alne '{if(/^#/){print}else{next unless $F[6] eq "PASS";next if $F[0] =~/_/;print } }' > ${mutectdir}/${arr[0]}_filter_pass.vcf
+done
+
+
+# 根据VAF和读数来进一步过滤
+ls *_filter.vcf|while read id
+do
+sample=${id%.*}
+echo $sample
+cat $sample.vcf|grep "#" > header
+cat $sample.vcf|grep -v "#" > input.vcf
+awk -F "\t" '{split($11,a,":");split(a[2],b,",");if(b[2]>=3&&a[3]>=0.05) print}' input.vcf > output.vcf
+cat header output.vcf > final_vcf/${sample}_vaf.vcf
+done
+
+```
+
+
+
+##### VAF过滤
 
 ```shell
 # 过滤掉变异等位基因频率（VAF)<0.05且支持数小于3个reads的结果
@@ -944,8 +1236,6 @@ done
 less TIS76106536F1D1L1_S63_filter.vcf|grep -v "#"|wc -l
 
 cat TIS76106536F1D1L1_S63_filter.vcf|grep -v "#"|less -SN
-
-
 #  读取第一行，按制表符分割，输出第11个字段
 head -1 input.vcf |awk -F "\t" '{print $11}'
 
@@ -955,7 +1245,7 @@ head -1 input.vcf |awk -F "\t" '{split($11,a,":");print a[3]}'
 # 读取第一行，按制表符分割，取第11个字段，按照冒号分割，取出第二个字段，再将第二个字段以逗号划分，再取第二个字段。
 head -1 input.vcf |awk -F "\t" '{split($11,a,":");split(a[2],b,",");print b[2]}'
 
-
+# 根据VAF和读数来进一步过滤
 ls *_filter.vcf|while read id
 do
 sample=${id%.*}
@@ -969,159 +1259,139 @@ done
 
 
 
-
-
-#### hg19
-
-```shell
-# gatkmutectbx.sh
-#! /bin/bash
-ref=/home/fsd/liver_wes/hg19/hg19.fasta
-bed=/home/fsd/liver_wes/hg19/bed/hg19_exon.bed
-
-config2=$1
-cat $config2 | while read id
-do
-	arr=(${id})
-	sample=${arr[1]}
-	T=${arr[1]}_bqsr.bam
-	N=${arr[0]}_bqsr.bam
-	startTime=`date +"%Y-%m-%d %H:%M:%S"`
-	echo "start Mutect2 for ${sample}" `date`
-	gatk --java-options "-Xmx20G -Djava.io.tmpdir=./" Mutect2 -R ${ref} \
-	-I ${T} -tumor  $(basename "$T" _bqsr.bam) \
-	-I ${N} -normal $(basename "$N" _bqsr.bam) \
-	-L ${bed}  \
-	-O ./mutect/${sample}_mutect2.vcf
-	
-	gatk  FilterMutectCalls \
-	-R ${ref} \
-	-V ./mutect/${sample}_mutect2.vcf \
-	-O ./mutect/${sample}_somatic.vcf
-	echo "end Mutect2 for ${id}" `date`
-
-	cat ./mutect/${sample}_somatic.vcf | perl -alne '{if(/^#/){print}else{next unless $F[6] eq "PASS";next if $F[0] =~/_/;print } }' > ./mutect/${sample}_filter.vcf
-	
-	endTime=`date +"%Y-%m-%d %H:%M:%S"`
-	st=`date -d  "$startTime" +%s`
-	et=`date -d  "$endTime" +%s`
-	sumTime=$(($et-$st))
-	echo -e "\n样本："${sample}"  耗时："$sumTime"秒！"  
-done
-
-split -l 6 -d config2 config2_
-# gatkmutectmain.sh  
-# 放到cpu跑，计算量小，这一批
-#! /bin/bash
-for config in config2_00 config2_01 config2_02 config2_03 config2_04
-do
-	nohup bash gatkmutectbx.sh $config &
-done
-
-# 放到gpu跑，计算量大，这一批
-#! /bin/bash
-for config in config2_05 config2_06 config2_07 config2_08 config2_09
-do
-	nohup bash gatkmutectbx.sh $config &
-done
-
-for config in config2_19 config2_11 config2_12 config2_13
-do
-	nohup bash gatkmutectbx.sh $config &
-done
-```
-
 ### ANNOVAR注释
 
 ```shell
+# 参数说明
+-nastring 表明后面跟着的缺失值的显示结果，一般为.
+-otherinfo 显示预测分类信息，致病or良性
+```
+
+#### Germline mutations_annovar
+
+```shell
+#! /bin/bash
+echo '-----------------ANNOVAR----------------------'
 annovar_script_file=~/software/annovar
 humandb=~/software/annovar/humandb/hg38_humandb
-vqsr_file=~/wes1106/align/5.VQSR/WES_filter_vqsr.vcf
+vqsr_file=~/wes1106/align/5.VQSR/wes_vqsr_PASS.vcf
 outfile_dir=~/wes1106/align/6.VCF_File/annovar
 ${annovar_script_file}/table_annovar.pl $vqsr_file $humandb \
 -buildver hg38 --thread 12 \
 -out ${outfile_dir}/wes \
 -remove \
--protocol refGene,knownGene,clinvar_20220320,exac03,avsnp150,dbnsfp42a \
--operation g,g,f,f,f,f \
+-protocol refGene,knownGene,clinvar_20240502,1000g2015aug_all,1000g2015aug_eas,exac03,gnomad40_exome,esp6500siv2_all,avsnp150,dbnsfp42a,dbscsnv11,cosmic99 \
+-operation g,g,f,f,f,f,f,f,f,f,f,f \
 -nastring . \
 -vcfinput
+
+#  ,cosmic99
+#-protocol refGene,knownGene,exac03,avsnp150,dbnsfp42a,dbscsnv11,cosmic99 \
+#-operation g,g,f,f,f,f,f \
+
 less ${outfile_dir}/wes.hg38_multianno.vcf | grep "#CHROM" > ${outfile_dir}/vcfhead
-less ${outfile_dir}/wes.hg38_multianno.vcf | grep "PASS" > ${outfile_dir}/vcfcontent
+less ${outfile_dir}/wes.hg38_multianno.vcf | grep "PASS" |grep -v "##" > ${outfile_dir}/vcfcontent
+cat ${outfile_dir}/vcfhead ${outfile_dir}/vcfcontent > ${outfile_dir}/wes.vcf
 head -1 ${outfile_dir}/wes.hg38_multianno.txt > ${outfile_dir}/txthead
 less ${outfile_dir}/wes.hg38_multianno.txt | grep "PASS" > ${outfile_dir}/txtcontent
-cat ${outfile_dir}/vcfhead ${outfile_dir}/vcfcontent > ${outfile_dir}/wes.vcf
 cat ${outfile_dir}/txthead ${outfile_dir}/txtcontent > ${outfile_dir}/wes.txt
-
-
-# 注释脚本  单样本测试
-humandb=/home/fsd/software/annovar/humandb/hg38_humandb
-id=FOR66031704F2D1L1_S47_filter.vcf
-table_annovar.pl $id $humandb \
--buildver hg38 \
--out case1 \
--remove \
--protocol refGene,knownGene,clinvar_20220320 \
--operation g,g,f \
--nastring . \
--vcfinput
-
-# 简单观测 注意以下三个文件
-# case1.avinput
-# case1.hg38_multianno.txt
-# case1.hg38_multianno.vcf
-# case1.hg38_multianno.txt记录了突变注释信息，如突变位点所在的基因、是nonsynonymous或者synonymous等
-#统计有多少外显子
-cat case1.hg38_multianno.txt|grep exonic|less -S|wc
-#观察是否有除了外显子之外的结果
-cat case1.hg38_multianno.txt|grep -v exonic
-
-# 批处理 注释
-# 制作config
-ls *_filter.vcf > tmp
-cat tmp | cut -d "_" -f 1,2 >config
-# annovar.sh 
-#! /bin/bash
-# /home/fsd/software/annovar/humandb/hg38_humandb
-humandb=/home/fsd/software/annovar/humandb
-cat config|while read id
-do
-table_annovar.pl ${id}_filter.vcf $humandb \
--buildver hg19 \
--out ${id} \
--remove \
--protocol refGene,knownGene,clinvar_20220320 \
--operation g,g,f \
--nastring . \
--vcfinput
-done
-
-
-
-# 看一下注释后txt的前两行
-head -2 TIS63016327F1D1L1_S125.hg38_multianno.txt
-
-# 增加两列 分别是肿瘤/类器官样本 和 正常样本
-
-# 单样本测试
-tumor=TIS63016327F1D1L1_S125
-normal=EDT24082129B1D1L1_S84
-# ^正则表达式，表示以...为开头
-grep -v '^Chr' TIS63016327F1D1L1_S125.hg38_multianno.txt | cut -f 1-20 | awk -v T=${tumor} -v N=${normal} '{print $0"\t"T"\t"N}'  >TIS63016327F1D1L1_S125.annovar.vcf 
-
-# 首先构造config2 直接从excel复制对应关系即可
-cat config2 | while read id
-do
-arr=($id)
-normal=${arr[0]}
-tumor=${arr[1]}
-grep -v '^Chr' ${tumor}.hg38_multianno.txt | cut -f 1-20 | awk -v T=${tumor} -v N=${normal} '{print $0"\t"T"\t"N}'  > ${tumor}.annovar.vcf 
-done
-# 获取列名
-head -1 FOR90051323F1D1L1_S148.hg38_multianno.txt | sed 's/Otherinfo/Tumor_Sample_Barcode\tMatched_Norm_Sample_Barcode/'|cut -f 1-22 > header
-# 合并列名
-cat header *annovar.vcf >annovar_merge.vcf
+echo '-----------------END ANNOVAR----------------------'
 ```
+
+##### ACMG注释
+
+InterVar是一种生物信息学软件工具，用于通过ACMG / AMP 2015指南对遗传变异进行临床解释。
+
+InterVar的输入是从ANNOVAR生成的注释文件，而InterVar的输出是将变体分类为“良性”，“可能良性”，“不确定重要性”，“可能致病性”和“致病性”。
+
+```shell
+intervar=~/software/InterVar
+annovar_script_file=~/software/annovar
+humandb=~/software/annovar/humandb/hg38_humandb
+intervardb=/home/mizzle/software/InterVar/intervardb
+python $intervar/Intervar.py \
+-b hg38 \
+-i wes.txt \
+--input_type=AVinput \
+-o ./wes \
+--table_annovar ${annovar_script_file}/table_annovar.pl \
+--convert2annovar ${annovar_script_file}/convert2annovar.pl \
+--annotate_variation ${annovar_script_file}/annotate_variation.pl \
+-d $humandb \
+-t $intervardb \
+--skip_annovar
+
+
+```
+
+```shell
+*Usage: Intervar.py [OPTION] -i INPUT -o OUTPUT ...*
+ *Intervar.py --config=config.ini ...*
+*Options:*
+ *--version* *输出版本信息并退出*
+ *-h, --help**显示帮助信息并退出*
+ *-c config.ini, --config=config.ini* *配置文件，可以将所有的参数都写到配置文件中*
+ *-b hg19, --buildver=hg19* *基因组版本，目前支持**GRCh37 hg18**，后期会支持* *GRCh38*
+ *-i example/ex1.avinput, --input=example/ex1.avinput* *包含变异的输入文件*
+ *--input_type=AVinput* *输入文件的格式，可以是**AVinput**、**VCF(**单样本**sample)**、**VCF_m(**多样本**)*
+ *-o example/myanno, --output=example/myanno* *输出文件的前缀*
+ *InterVar Other Options:*
+ *-t intervardb, --database_intervar=intervardb InterVar**自带数据库*
+ *-s your_evidence_file, --evidence_file=your_evidence_file* *用户自己构建的证据*
+ *Annovar Options:*
+ *--table_annovar=./table_annovar.pl table_annovar.pl**脚本路径*
+ *--convert2annovar=./convert2annovar.pl convert2annovar.pl**脚本路径*
+ *--annotate_variation=./annotate_variation.pl annotate_variation.pl**脚本路径*
+ *-d humandb, --database_locat=humandb annovar**注释数据库路径*
+ *--skip_annovar* *基于现有的注释结果，不重新进行注释*
+```
+
+
+
+
+
+#### Somatic mutation_annovar
+
+```shell
+#! /bin/bash
+mutectdir=../somatic_align/5.mutect
+config=./somatic_config
+humandb=~/software/annovar/humandb/hg38_humandb
+annovar_script_file=~/software/annovar
+outfile_dir=../somatic_align/6.annovar
+cat ${config} | while read id
+do
+arr=(${id})
+${annovar_script_file}/table_annovar.pl ${mutectdir}/${arr[0]}_filter_pass.vcf $humandb \
+-buildver hg38 --thread 12 \
+-out ${outfile_dir}/${arr[0]} \
+-remove \
+-protocol refGene,knownGene,clinvar_20240502,1000g2015aug_all,1000g2015aug_eas,exac03,gnomad40_exome,esp6500siv2_all,avsnp150,dbnsfp42a,dbscsnv11,cosmic99 \
+-operation g,g,f,f,f,f,f,f,f,f,f,f \
+-nastring . \
+-vcfinput
+
+tumor=${arr[0]}
+normal=${arr[1]}
+grep -v '^Chr' ${outfile_dir}/${tumor}.hg38_multianno.txt | awk -v T=${tumor} -v N=${normal} '{print $0"\t"T"\t"N}'  > ${outfile_dir}/${tumor}.annovar.vcf 
+
+echo -e "\n样本："${arr[0]}"  finished!"
+done
+
+tmp=$(head -n 1 ${config})
+arr=($tmp)
+head -1 ${outfile_dir}/${arr[0]}.hg38_multianno.txt | awk '{print $0"\tTumor_Sample_Barcode\tMatched_Norm_Sample_Barcode"}' > ${outfile_dir}/header
+# 合并列名
+cat ${outfile_dir}/header ${outfile_dir}/*annovar.vcf >${outfile_dir}/annovar_merge.vcf
+```
+
+
+
+
+
+
+
+
 
 ### VEP注释
 
@@ -1668,7 +1938,9 @@ cat config | xargs -I {} -P 5 bash -c '
 1. **过滤基于质量的变异**：
    - 使用`QUAL`列过滤低质量变异。通常，会选择一个阈值（如`QUAL > 30`或更高）来确保变异的可信度。
    - 使用`FILTER`列（如果存在）来去除未通过质控的变异。
-
+   - 胚系突变过滤同义突变、覆盖度小于10的突变、VAF小于25%的突变、MAF大于1%的突变
+   - 体细胞突变过滤同义突变、覆盖度小于10的突变（要求在control也要大于10）、突变的AF大于5%，匹配的正常的AF小于5%、删除dbSNF142中的snv、保证突变位点前向后向都有read覆盖。[Clinical and genetic characterization of Epstein-Barr virus–associated T/NK-cell lymphoproliferative diseases - ScienceDirect](https://www.sciencedirect.com/science/article/pii/S0091674922015706?via%3Dihub#appsec1)
+   
 2. **过滤基于频率的变异（common variants）**：
    - 使用`ExAC_ALL`, `ExAC_EAS`, `gnomAD_exome_ALL`, `gnomAD_exome_EAS`等列去除常见变异。例如，你可能想去除所有在一般人群中频率高于0.01（1%）的变异。
 
@@ -1899,4 +2171,44 @@ vcftools  --vcf snp.vcf  --recode --recode-INFO-all --stdout  --max-missing 1 > 
 ```
 
 **--max-missing 后跟的值为 0-1 ，1代表不允许缺失，0代表允许全部缺失**
+
+## VCF格式详解
+
+### GT和PGT
+
+GT，即genotype，表示为0/1, 1/1, 0/0或者是0|1, 1|0, 0|0, 1|2等。其实0代表REF allele，1代表第一个ALT allele，2代表第二个ALT allele。比如第四列REF是A，第五列ALT是C，T（有两个ALT）。某个人是A/C，那么基因型就是0/1，A/T的话就是0/2，C/C就是1/1，以此类推。此外还可能见到0|1或者1|1中间是竖线不是斜线的情况，这种是已经phased的genotype，也就是已经知道REF/ALT allele是来自于父亲还是母亲了。比如有的数据库的phased的数据是|前的是父亲的allele，|后的是母亲的allele。比如REF是A，ALT是C，T；基因型为1|0，则父亲是第一个ALT也就是C，母亲是REF也就是A。不过对于有的phased数据而言第一个并不一定是父亲。
+
+[VCF(variant call format)文件格式详解 - 简书 (jianshu.com)](https://www.jianshu.com/p/b2b30b23c866)
+
+[想要统计杂合度，看结果0/1 与0|1迷惑了？ - 知乎 (zhihu.com)](https://zhuanlan.zhihu.com/p/172499071)
+
+
+
+VCF文件中GT:AD:DP:GQ:PGT:PID:PL:PS对应的值是0|0:55,0:58:99:0|1:46668168_C_G:0,160,2267:46668168。那这里到底有没有发生突变？因为GT是0|0，而PGT是0|1
+
+在VCF（Variant Call Format）文件中，不同的标记通常代表着基因组序列中的具体信息。对于您提供的样本，这些标记和它们的值有特定的意义：
+
+- **GT (Genotype)**：`0|0` 表示在该位点上的基因型为参考基因型的同型合子（即两个等位基因都是参考序列）。
+- **AD (Allelic Depths)**：`55,0` 表示参考等位基因有55个支持读数，变异等位基因有0个支持读数。
+- **DP (Depth of Coverage)**：`58` 表示该位点上总的测序深度为58。
+- **GQ (Genotype Quality)**：`99` 表示基因型的质量分数非常高，基本可以确定基因型判断是准确的。
+- **PGT (Phased Genotype)**：`0|1` 表示存在一个相对于参考基因型相位的变异。
+- **PID (Phasing ID)**：`46668168_C_G` 表示相位信息的特定ID和相应的参考与变异等位基因。
+- **PL (Phred-scaled Likelihoods)**：`0,160,2267` 表示基因型为0/0、0/1、1/1时的质量分数。
+- **PS (Phase Set)**：`46668168` 表示该基因型相位的设置点。
+
+在此情况下，`GT` 值为 `0|0` 表明没有检测到变异（即该位点的基因型为参考序列）。然而，`PGT` 值为 `0|1` 暗示在相位上可能存在异质性。这种情况通常表明虽然在该特定位点检测到了参考序列，但在相邻的某些位点可能检测到了变异，并且这些变异在读数中被认为是相连的（phased）。
+
+总的来说，根据 `GT` 的判断，在这个特定的位点上没有发生突变。`PGT` 的信息可能指向相邻位点上的潜在变异，但这不影响该位点的基因型判断。
+
+### Clinvar各字段
+
+[Review status in ClinVar (nih.gov)](https://www.ncbi.nlm.nih.gov/clinvar/docs/review_status/)
+
+### VAF和MAF
+
+[VAF，MAF，肿瘤纯度，MCF，CCF的概念和计算方法 （转载）-CSDN博客](https://blog.csdn.net/liangbilin/article/details/108430426)
+
+AF的全称是Variant Allele Frequency（变异等位基因频率）或Variant Allele Fraction（变异等位基因分数）。简单来说就是在基因组某个位点支持alternate/mutant allele的reads覆盖深度占这个位点总reads覆盖深度的比例。以VCF文件中的字段为例，其中DP代表Total Depth，AD代表Allele Depth，因此VAF的计算就是：
+![image-20240514171920863](./assets/image-20240514171920863.png)
 
