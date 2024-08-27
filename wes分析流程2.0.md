@@ -495,10 +495,10 @@ bcftools view -O z --threads 10 --no-update -S 1000G_chinese.txt merged.vcf.gz -
 bed=interest_gene.bed
 bcftools view -R $bed -O z 1000G_chinese.vcf.gz -o 1000G_chinese_interest.vcf.gz
 # 按照染色体列和POS列重排
-bcftools view --header-only -O v 1000G_chinese_interest.vcf.gz -o header.vcf
-bcftools view --no-header -O v 1000G_chinese_interest.vcf.gz -o content.vcf
-cat content.vcf | sort -k1,1 -k2,2n > content_sorted.vcf
-cat header.vcf content_sorted.vcf > 1kg_chinese_interest.vcf
+bcftools view --header-only -O v 1000G_chinese_interest.vcf.gz -o header
+bcftools view --no-header -O v 1000G_chinese_interest.vcf.gz -o content
+cat content | sort -k1,1 -k2,2n > content_sorted
+cat header content_sorted > 1kg_chinese_interest.vcf
 bgzip -f 1kg_chinese_interest.vcf
 tabix -p vcf 1kg_chinese_interest.vcf.gz
 

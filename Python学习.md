@@ -914,6 +914,8 @@ json.loads(s)
 ## vscode调试当前文件
 
 ```shell
-"cwd":"${fileDirname}"
+"cwd":"${fileDirname}" # 设置为当前文件目录，用于直接调试
+"cwd": "${workspaceFolder}" # 设置为根目录，用于命令行调试
+"args": ["train","lora_sft.yaml"] # 用于带参数调试
 ```
 
