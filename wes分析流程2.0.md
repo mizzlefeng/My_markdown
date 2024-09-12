@@ -10,6 +10,7 @@ chmod 755 fastp #给可执行权限
 # 将常用软件都写入环境变量
 echo 'export PATH="~/software:$PATH"' >> ~/.bashrc
 source ~/.bashrc
+
 ```
 
 ## 安装conda

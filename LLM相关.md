@@ -21,6 +21,11 @@ pip install -U huggingface_hub
 python hf_download.py --model lmsys/vicuna-7b-v1.5 --save_dir ./hf_hub
 python hf_download.py -M baichuan-inc/Baichuan2-7B-Chat -S ./model
 python .\hf_download.py -D pleisto/wikipedia-cn-20230720-filtered -S ../general_dataset/pretrain # 25w
+
+
+powershell：
+$env:HF_ENDPOINT = "https://hf-mirror.com"
+huggingface-cli download --resume-download facebook/esm2_t33_650M_UR50D --local-dir esm
 ```
 
 ## 魔塔
