@@ -1,4 +1,4 @@
-# t安装软件及数据库
+# 安装软件及数据库
 
 ## 安装fastp
 
@@ -232,8 +232,6 @@ wget http://www.openbioinformatics.org/annovar/download/hg38_avdblist.txt.gz ./
 annovar_script_file=~/software/annovar
 humandb=~/software/annovar/humandb/hg38_humandb
 ${annovar_script_file}/annotate_variation.pl -downdb -buildver hg38 -webfrom annovar dbnsfp47a ./
-
-
 
 
 nohup wget -c http://www.openbioinformatics.org/annovar/download/hg38_gnomad40_exome &
