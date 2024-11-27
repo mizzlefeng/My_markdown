@@ -13,7 +13,14 @@ ngrok http 11.11.11.101:7860
 ## HF镜像
 
 可能出现模型下载的大小一样，但是就是读取不了的问题
+
+```shell
+pip install -U huggingface_hub
 ```
+
+
+
+```shell
 git clone https://github.com/LetheSec/HuggingFace-Download-Accelerator.git
 cd HuggingFace-Download-Accelerator
 
@@ -25,7 +32,7 @@ python .\hf_download.py -D pleisto/wikipedia-cn-20230720-filtered -S ../general_
 
 powershell：
 $env:HF_ENDPOINT = "https://hf-mirror.com"
-huggingface-cli download --resume-download facebook/esm2_t33_650M_UR50D --local-dir esm
+huggingface-cli download --resume-download togethercomputer/evo-1-131k-base --local-dir ./
 ```
 
 ## 魔塔
@@ -640,3 +647,68 @@ $$\eqalign{
 可以想象一下这个W被拆成两个矩阵，利用分块矩阵乘法思想结果发现拼接和相加实质上没有太多的区别。
 
 ![fa4cefa6ef2490d25ce323237eadf07](./assets/fa4cefa6ef2490d25ce323237eadf07.jpg)
+
+# Yi微调流程
+
+安装llama-factory
+
+基于llamafactory进行微调
+
+基于llamafactory进行合并
+
+[快速入门 - Ollama中文网](https://ollama.fan/getting-started/)从 PyTorch 或 Safetensors 导入
+
+[导入模型 - Ollama中文网](https://ollama.fan/getting-started/import/)
+
+```python
+#4.安装llama.cpp项目依赖
+pip install -r requirements.txt
+#5.执行转换脚本
+python convert.py /root/autodl-tmp/itpossible/merge --outtype f16 --outfile /root/autodl-tmp/itpossible/convert.bin
+```
+
+[ollama 使用自定义大模型_ollama 自定义模型-CSDN博客](https://blog.csdn.net/spiderwower/article/details/138506271)
+
+ModelFILE
+
+```python
+FROM /mnt/wsl/PHYSICALDRIVE2p1/Yi1.5/model/gguf/Yi-8.8B-1_5-9B_medfollow-F16.gguf
+TEMPLATE """{{ if .System }}<|im_start|>system
+{{ .System }}<|im_end|>
+{{ end }}{{ if .Prompt }}<|im_start|>user
+{{ .Prompt }}<|im_end|>
+{{ end }}<|im_start|>assistant
+{{ .Response }}<|im_end|>
+"""
+PARAMETER stop "<|im_end|>" #需要加这个，告诉ollama该停止输出了
+```
+
+端口内网穿透
+
+```python
+curl http://localhost:11434/api/generate -d '{
+  "model": "yi_med",
+  "prompt":"你是？"
+}'
+
+可以在ollama自己的设置里改OLLAMA HOST更改其他端口
+```
+
+# 更改运行模型时的本地地址
+
+[不会修改HuggingFace模型下载默认缓存路径？一篇教会你!_huggingface默认下载路径-CSDN博客](https://blog.csdn.net/yyh2508298730/article/details/137773125)
+
+方式二：设置环境变量
+先了解Shell优先级顺序，
+
+Shell 环境变量（默认）： HUGGINGFACE_HUB_CACHE 或 TRANSFORMERS_CACHE 。
+Shell 环境变量： HF_HOME 。
+Shell 环境变量： XDG_CACHE_HOME + /huggingface 。
+实际使用中，transformer库首先检查HUGGINGFACE_HUB_CACHE是否被设置，如果没有，再按照上述的优先级顺序检查其他环境变量。下载模型我一般更改 HF_HOME 。
+
+```shell
+export HF_HOME="/path/to/you/dir"  # 替换为你想更改的目标路径
+
+然后本来是要在./cache中运行的，结果到我们设置的目录中查询了。
+```
+

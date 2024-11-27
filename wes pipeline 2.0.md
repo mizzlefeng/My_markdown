@@ -27,6 +27,15 @@ bash Miniconda3-py37_4.12.0-Linux-x86_64.sh
 ![1677218526816](assets/1677218526816.png)
 
 ```shell
+[public@mu01 software]$ conda init
+bash: conda: 未找到命令...
+
+source ~/miniconda3/bin/activate
+```
+
+
+
+```shell
 # 创建新环境
 conda create -n wes python=3.7
 # 查看当前系统所有的conda环境
@@ -1553,6 +1562,43 @@ cat header tmp > VEP_merge.maf
 https://github.com/mskcc/vcf2maf/blob/d13e404033ebf89f208c9010d9dc8f008356c0f7/docs/vep_maf_readme.txt
 ```
 
+## Varscan找突变
+
+官方文档：[VarScan - Variant Detection in Massively Parallel Sequencing Data](https://varscan.sourceforge.net/)
+
+![img](./assets/6vq0ieqbsc.png)
+
+```shell
+# 定义样本号数组
+sample_ids=("SRR7739527" "SRR7739532" "SRR7739535" "SRR7739538" "SRR7739540")
+
+# 使用 parallel 并行执行命令
+parallel -j 3 'samtools mpileup -B -f ~/database/ref/hg19/hg19.fasta {1}_bqsr.bam | java -jar /home/multi_omics/software/VarScan.v2.3.9.jar mpileup2cns --output-vcf 1 > ../varscan_result/{1}_varscan.vcf' ::: "${sample_ids[@]}"
+```
+
+![image-20241112095756387](./assets/image-20241112095756387.png)
+
+```shell
+samtools mpileup -B -f reference.fasta myData.bam | java -jar VarScan.v2.2.jar mpileup2snp
+
+USAGE: java -jar $VARSCAN/VarScan.jar mpileup2cns [pileup file] OPTIONS
+        mpileup file - The SAMtools mpileup file
+
+        OPTIONS:
+        --min-coverage  Minimum read depth at a position to make a call [8]
+        --min-reads2    Minimum supporting reads at a position to call variants [2]
+        --min-avg-qual  Minimum base quality at a position to count a read [15]
+        --min-var-freq  Minimum variant allele frequency threshold [0.01]
+        --min-freq-for-hom      Minimum frequency to call homozygote [0.75]
+        --p-value       Default p-value threshold for calling variants [99e-02]
+        --strand-filter Ignore variants with >90% support on one strand [1]
+        --output-vcf    If set to 1, outputs in VCF format
+        --vcf-sample-list       For VCF output, a list of sample names in order, one per line
+        --variants      Report only variant (SNP/indel) positions [0]
+```
+
+
+
 # CNV calling 
 
 ## CNVkit检测拷贝数变异
@@ -1701,6 +1747,44 @@ conda activate pyclone
 vim /home/foo/.config/matplotlib/matplotlibrc :
 # backend      : qt5agg
 backend      : Agg
+
+# 出现警告
+/home/multi_omics/software/miniforge3/envs/pyclone/lib/python2.7/site-packages/pyclone/post_process/loci.py:112: YAMLLoadWarning: calling yaml.load() without Loader=... is deprecated, as the default Loader is unsafe. Please read https://msg.pyyaml.org/load for full details.
+  config = yaml.load(fh)
+ 
+# 警告解决方案
+这个警告是因为你使用了 yaml.load() 函数而没有指定安全的加载方式。为了解决这个问题，你可以修改代码，使用 yaml.safe_load() 来代替 yaml.load()。这样可以防止执行任意代码的风险。
+# 修改前:
+config = yaml.load(fh)
+# 修改后:
+import yaml
+config = yaml.safe_load(fh)
+
+# 出现警告
+/home/multi_omics/software/miniforge3/envs/pyclone/lib/python2.7/site-packages/pyclone/post_process/clusters.py:63: RuntimeWarning: invalid value encountered in sqrt
+  std = np.sqrt(var)
+  
+# 解决方案
+该警告指出在计算平方根时遇到了无效的值。这通常发生在尝试对负数或者 NaN (非数值) 进行开方操作时。
+import numpy as np
+# 确保var中的所有值至少为0
+var_clipped = np.clip(var, 0, None)
+std = np.sqrt(var_clipped)
+
+
+# 出现警告
+/home/multi_omics/miniconda3/envs/pyclone/lib/python2.7/site-packages/matplotlib/font_manager.py:1331: UserWarning: findfont: Font family [u'sans-serif'] not found. Falling back to DejaVu Sans
+  (prop.get_family(), self.defaultFamily[fontext]))
+All processes finished!
+这个警告信息表明，matplotlib在尝试加载特定字体（如 sans-serif）时没有找到匹配的字体，因此回退到默认的 DejaVu Sans 字体。通常，这个问题不会影响图形的生成或程序的运行，但如果你希望消除警告信息，可以尝试以下方法：
+
+# 解决方案
+如果不影响结果，可以选择忽略此类警告：
+import warnings
+warnings.filterwarnings("ignore", category=UserWarning, module="matplotlib")
+
+
+
 
 # 测试数据+测试代码
 PyClone run_analysis_pipeline --in_files SRR385938.tsv SRR385939.tsv SRR385940.tsv SRR385941.tsv --working_dir pyclone_analysis  --num_iters 1000 
