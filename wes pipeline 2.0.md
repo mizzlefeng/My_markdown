@@ -454,7 +454,7 @@ sudo yum install parallel
 wget https://ftpmirror.gnu.org/parallel/parallel-latest.tar.bz2 --no-check-certificate
 tar xjf parallel-latest.tar.bz2
 cd parallel-*
-./configure --prefix=/path/to/bin
+./configure --prefix=./
 su
 make -j 4
 make install

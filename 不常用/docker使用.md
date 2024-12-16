@@ -13,3 +13,9 @@ docker kill 容器id #强制停止当前容器
 docker logs --help # 查看日志
 ```
 
+**重启WinNAT服务**：通过停止并重新启动WinNAT服务，可以解决一些临时的网络配置问题或重置网络状态。
+
+```shell
+net stop winnat  // 停止WinNAT服务
+net start winnat // 重新启动WinNAT服务
+```
