@@ -6,7 +6,7 @@ Created on Fri Mar  8 10:35:49 2024
 """
 
 from pptx import Presentation
-outfilepath = r"C:\Users\DELL\Desktop\图神经网络技术及应用.pptx"
+outfilepath = r"C:\Users\mizzle\Desktop\肝炎预测Hep Predictor.pptx"
 # 打开要提取备注的 PPT 文件
 prs = Presentation(outfilepath)
  

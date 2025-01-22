@@ -2295,3 +2295,6 @@ VCF文件中GT:AD:DP:GQ:PGT:PID:PL:PS对应的值是0|0:55,0:58:99:0|1:46668168_
 AF的全称是Variant Allele Frequency（变异等位基因频率）或Variant Allele Fraction（变异等位基因分数）。简单来说就是在基因组某个位点支持alternate/mutant allele的reads覆盖深度占这个位点总reads覆盖深度的比例。以VCF文件中的字段为例，其中DP代表Total Depth，AD代表Allele Depth，因此VAF的计算就是：
 ![image-20240514171920863](./assets/image-20240514171920863.png)
 
+## samtools libcrypto.so.1.0.0
+
+~/miniconda3/envs/space/bin/samtools

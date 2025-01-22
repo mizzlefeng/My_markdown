@@ -992,3 +992,92 @@ json.loads(s)
 "args": ["train","lora_sft.yaml"] # 用于带参数调试
 ```
 
+## vscode中更改专用终端的Conda环境
+
+![image-20250102095156549](./assets/image-20250102095156549.png)
+
+[在VSCode中更改专用终端的Conda环境_vscode切换conda环境-CSDN博客](https://blog.csdn.net/i89211/article/details/138900633#:~:text=在你的项目根目录下，创建一个名为 .vscode 的文件夹（如果尚不存在），并在其中创建或编辑 settings.json 文件。 将 %2Fpath%2Fto%2Fyour%2Fconda%2Fenv%2Fpython,替换为你Conda环境中Python解释器的路径。 你可以通过在终端中激活该环境并运行 which python 或 where python 命令来找到这个路径。)
+
+# ICT
+
+一般函数不放返回值，只返回错误。华为习惯。
+
+# 阿里云网页
+
+将 **80 端口** 的流量转发到 **8501 端口**
+
+```
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-port 8501
+sudo iptables-save
+```
+
+查看当前规则
+
+```
+sudo iptables -t nat -L -v -n --line-numbers
+```
+
+清除整个NAT表
+
+```
+sudo iptables -t nat -F
+sudo iptables-save
+```
+
+## nginx反向代理配置
+
+```shell
+# For more information on configuration, see:
+#   * Official English Documentation: http://nginx.org/en/docs/
+#   * Official Russian Documentation: http://nginx.org/ru/docs/
+
+user nginx;
+worker_processes auto;
+error_log /var/log/nginx/error.log;
+pid /run/nginx.pid;
+
+# Load dynamic modules. See /usr/share/doc/nginx/README.dynamic.
+include /usr/share/nginx/modules/*.conf;
+
+events {}
+
+http {
+        server {
+            listen 443 ssl http2;
+            server_name heppre.icu;
+            ssl_certificate /etc/nginx/ssl/heppre.icu.pem;
+            ssl_certificate_key /etc/nginx/ssl/heppre.icu.key;
+            ssl_protocols TLSv1.2 TLSv1.3;
+            
+            location / {
+                    proxy_set_header Host $host;
+                    proxy_set_header X-Real-IP $remote_addr;
+                    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                    proxy_set_header X-Forwarded-Proto $scheme;
+                    proxy_http_version 1.1;
+                    proxy_set_header Upgrade $http_upgrade;
+                    proxy_set_header Connection "upgrade";
+                    proxy_pass http://localhost:8501;
+                }
+}
+        server {
+            listen 80;
+            server_name heppre.icu;
+            # 重定向
+            return 301 https://$host$request_uri;
+            # location / {
+            #         proxy_set_header Host $host;
+            #         proxy_set_header X-Real-IP $remote_addr;
+            #         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            #         proxy_set_header X-Forwarded-Proto $scheme;
+            #         proxy_http_version 1.1;
+            #         proxy_set_header Upgrade $http_upgrade;
+            #         proxy_set_header Connection "upgrade";
+            #         proxy_pass http://localhost:8501;
+            #     }
+}
+}
+
+```
+
+注意安全组
