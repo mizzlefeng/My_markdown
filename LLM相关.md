@@ -32,7 +32,8 @@ python .\hf_download.py -D pleisto/wikipedia-cn-20230720-filtered -S ../general_
 
 powershell：
 $env:HF_ENDPOINT = "https://hf-mirror.com"
-huggingface-cli download --resume-download togethercomputer/evo-1-131k-base --local-dir ./
+export HF_ENDPOINT="https://hf-mirror.com"
+huggingface-cli download --resume-download OpenGVLab/InternVL2_5-2B --local-dir ./
 ```
 
 ## 魔塔

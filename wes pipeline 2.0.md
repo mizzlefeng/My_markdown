@@ -667,7 +667,8 @@ $qualimap bamqc --java-mem-size=10G -gff $bed -bam ${aligndir}/${1}.bam -outdir 
 export -f map_plot
 cat $config | parallel -j$num -k --load 80% map_plot
 
-
+conda activate multiqc
+multiqc .
 # mutiqc合并结果
 
 # 安装mutiqc  注意 conda 安装不上  使用pip安装
@@ -2209,6 +2210,36 @@ VCF（Variant Call Format）文件格式被广泛用来存储基因组变异信�
 
 ![image-20240428150906751](./assets/image-20240428150906751.png)
 
+
+
+# 家系突变
+
+主要就是检测一个家族的胚系突变（如果样本量很少，也可以做体细胞突变试试）。观察是什么遗传方式，常显，常隐，复合杂合，嵌入体等等。
+
+> 检索HGMD数据库提示c.139＋1G>T为既往未报道的变异。
+
+注意可以去HGMD去检索突变是否是未报道的新突变。
+
+
+
+注意复合杂合突变：
+
+1. 基因型是杂合状态0/1
+2. 两条染色体都有突变，但突变得到了不同的等位基因，两个又不一样，一个突变成了为a1，另一个突变成了a3，基因型为a1a3.
+
+```shell
+# 假设注释文件内容：
+Chr Start   End     Ref Alt Func.refGene Gene.refGene ExonicFunc.refGene Sample.GT
+1   1000    1000    A   T   exonic       BRCA1        nonsynonymous      0/1
+1   2000    2000    C   G   exonic       BRCA1        frameshift        0/1
+```
+
+![image-20250327223314050](./assets/image-20250327223314050.png)
+
+[遗传病WES检测案例—POGZ基因突变的怀特-萨顿综合征|萨顿综合征|基因突变|POGZ|遗传病|WES|WSS|数据库|案例|怀特|检测|基因|变异|致病|患儿|表型|-健康界](https://www.cn-healthcare.com/articlewm/20231017/content-1614086.html)
+
+
+
 # 问题
 
 ## 突变与AAChange.refGene不一致
@@ -2298,3 +2329,45 @@ AF的全称是Variant Allele Frequency（变异等位基因频率）或Variant A
 ## samtools libcrypto.so.1.0.0
 
 ~/miniconda3/envs/space/bin/samtools
+
+## 为什么Annovar注释后的TXT和VCF文件行数不一致？
+
+往往vcf和之前的突变数量一致，而TXT文件多出很多行。
+
+VCF与TXT文件行数不匹配通常是由于**变异跨越多注释区域**或**多数据库/转录本注释**导致。
+
+```shell
+问题：外显子测序分析后，使用ANNOVAR注释的txt和vcf数量对应不上是为什么？比如在第214行和215行，vcf的文件是chr1 1708849 TTCCTCTTCC T和chr1 1708855 TTCCTCCTCC T,*，对应的txt是三行（214行-216行），分别是chr1 1708850 1708858 TCCTCTTCC -和chr1 1708856 1708864 TCCTCTTCC -和chr1 1708856 1708864 TCCTCTTCC -和chr1 1708855 1708864 TTCCTCCTCC 0。
+并且我发现215行和216行，几乎完全一致，多样本的基因型等信息一模一样。
+
+答案：1.可能涉及到将复杂的变异（比如插入缺失或结构变异）分解成多个注释条目。这可能是因为VCF中的一个多等位位点或复杂变异被拆分成多个行，从而导致行数不一致。
+2.复杂变异的分解 INDELs/MNPs（多核苷酸多态性）：长插入/缺失或复杂结构变异可能被标准化为多个简单变异。 左对齐（Left Normalization）：ANNOVAR会对变异进行左对齐标准化，可能导致坐标变化和行数增加。 断点拆分：跨区域的变异（如跨越两个外显子）可能被拆分为多行。
+3. 注释数据库的影响 多转录本注释：同一变异影响多个转录本或基因时，每个注释会单独成行。 功能区域重叠：变异位于多个功能区域（如外显子、调控区）的交界处，每个区域生成一行注释。
+4. VCF第215行：chr1 1708855 TTCCTCCTCC T,* 这是一个多等位位点（ALT包含T和*，*可能代表缺失）。ANNOVAR可能拆分为两行：一行处理T（对应TXT第215行）。另一行处理*（对应TXT第216行）。
+
+最终答案：实际就是将多等位位点拆分
+VCF文件中一个多等位位点（如ALT = A,T）会被ANNOVAR拆分为多个单等位注释行。例如，一个包含两个ALT的VCF行可能在TXT中生成两行注释。
+```
+
+```python
+解决方案：
+删除重复行，并保留第一个结果。
+
+txtdf = pd.read_table("../data/wes_germline_annovar.txt", sep="\t")
+subset_columns = txtdf.columns[txtdf.columns.get_loc('Otherinfo1'):]
+txtdf = txtdf.drop_duplicates(subset=subset_columns, keep='first')
+```
+
+
+
+
+
+
+
+# 额外操作
+
+## 将不同line的fastq文件合并
+
+![image-20250305140150694](./assets/image-20250305140150694.png)
+
+直接使用cat 按顺序拼接即可。
